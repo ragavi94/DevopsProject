@@ -1,0 +1,68 @@
+---
+- name: enabling access to mvn without password 
+  lineinfile:
+    path: /etc/sudoers
+    line: "jenkins ALL=(ALL) NOPASSWD: ALL"
+  become: true
+
+
+- name: Copy checkbox job builder script
+  template:
+      src: ~/milestone1/ansible_scripts/roles/checkbox_create_job/templates/checkboxio_job_create.yml
+      dest: /home/vagrant/jobs/checkbox_job.yml
+  
+- name: create jobs
+  shell: 'sudo jenkins-jobs --conf ~/jenkins_jobs.ini update ~/jobs'
+  
+
+- name: check if checkbox git folder exists
+  stat:
+    path: "/var/lib/jenkins/workspace/checkbox_job/checkbox.io/"
+  register: workspace
+
+- name: delete if the checkbox git directory exists
+  file:
+    state: absent
+    path: "/var/lib/jenkins/workspace/checkbox_job/checkbox.io/"
+  when: workspace.stat.exists
+  become: true
+
+- name: jenkins cli download
+  get_url:
+    url: '{{ jenkins_url }}/jnlpJars/jenkins-cli.jar'
+    dest: /home/vagrant/jenkins-cli.jar
+    timeout: 30
+    mode: 0777
+    owner: vagrant
+    group: vagrant
+  become: true
+
+- name: Change StrictHostKeyChecking to no
+  lineinfile: 
+    path: /etc/ssh/ssh_config
+    regexp: '#   StrictHostKeyChecking ask'
+    line: '   StrictHostKeyChecking no'
+  become: true
+
+- name: changing config.xml
+  lineinfile:
+    path: /var/lib/jenkins/config.xml
+    regexp: '    <denyAnonymousReadAccess>true</denyAnonymousReadAccess>'
+    line: '    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>'
+  become: true
+
+- name: Restarting Jenkins
+  service:
+    name: jenkins
+    state: restarted
+  become: true
+
+- name: Wait for jenkins to restart
+  wait_for: 
+    port: 8080
+    delay: 30
+
+- name: build checkbox job
+  shell: 'java -jar jenkins-cli.jar -s {{ jenkins_url }}/ build {{ checkboxio_job_name }} --username {{ jenkins_user_name }} --password {{ jenkins_password }}'
+  become: true
+...

@@ -1,0 +1,11 @@
+---
+  itrust_name: "itrust_job"
+  jenkins_url: "http://localhost:8080"
+  jenkins_password: "Sunmoon@12"
+  jenkins_user_name: "jenkins"
+  username: "rraman2"
+  password: "ramrag3151"
+  mysql_password: "root"
+  jenkins_url2: "http://localhost:5001"
+
+...

@@ -1,0 +1,165 @@
+---
+    - name: Installing nodejs
+      apt: 
+        name: nodejs 
+        state: present
+      become: true
+      
+    - name: Install Git Package 
+      apt: name=git state=present update_cache=true
+
+    - name: Update and Upgrade
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      become: yes
+      with_items:
+          - nodejs-legacy
+          - nginx
+          - git
+          - mongodb
+          - python-pip
+          - python3-setuptools
+      apt:
+        name: '{{item}}'
+        state: latest
+        update_cache: yes
+        force: yes
+
+    - name: Install pip3
+      shell: 'easy_install3 pip'
+      become: true
+
+    - name: Install pymongo
+      become: yes
+      pip:
+        name: pymongo
+        state: latest
+
+    - name: Clone checkbox.io git repository
+      git:
+        repo: 'https://github.com/chrisparnin/checkbox.io.git'
+        dest: /home/vagrant/checkbox.io/
+        update: no
+
+    - name: Update and Upgrade packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: npm package
+      shell:
+        apt install npm -y
+      become: true
+
+    - name: dotenv environment install
+      shell: "sudo npm install dotenv"
+
+    - name: changes in 'default' file to refer local 'public_html'
+      replace:
+        dest: "/home/vagrant/checkbox.io/local-conf/default"
+        regexp: "root (.)+;"
+        replace: "root /home/vagrant/checkbox.io/public_html/;"
+        remote_src: yes
+      become: true
+
+    - name: copying nginx config to /etc
+      copy: 
+        src: /home/vagrant/checkbox.io/local-conf/nginx.conf 
+        dest: /etc/nginx/nginx.conf
+        mode: 0644
+        remote_src: yes 
+      become: yes
+      
+
+    - name: copying nginx default file to /etc
+      copy: 
+        src: /home/vagrant/checkbox.io/local-conf/default 
+        dest: /etc/nginx/sites-available/default 
+        mode: 0644 
+        remote_src: yes 
+      become: yes
+      
+
+    - name: Restart nginx 
+      service: name=nginx state=restarted
+      become: yes
+    
+    - name: Install Repository keys
+      apt_key: state=present keyserver=keyserver.ubuntu.com id=2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
+      become: yes
+
+    - name: Download MongoDB repository
+      shell: 
+        echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
+      become: yes
+
+    - name: sleep for a few seconds
+      wait_for: 
+        sleep: 60 
+
+    - name: MongoDB Repo installation
+      apt: name=mongodb-org update_cache=true cache_valid_time=600
+      become: yes
+
+    - name: Set permissions for mongodb storage
+      file: path=/data/db owner=vagrant group=mongodb mode=0775 state=absent
+      become: yes
+
+    - name: Set permissions for mongodb storage
+      file: path=/data/db owner=vagrant group=mongodb mode=0775 state=directory
+      become: yes
+
+    - name: start the mongod service
+      service: name=mongod state=started
+      become: yes
+
+    - name: add admin user
+      mongodb_user: database=admin name={{ dbuser }} password={{ dbpwd}} login_port=27017 state=present roles=userAdminAnyDatabase,readWriteAnyDatabase,dbAdminAnyDatabase,clusterAdmin
+      become: yes
+      ignore_errors: yes
+
+    - name: restart mongod service
+      service: name=mongod state=restarted
+      become: yes
+    
+    
+    - name: Installing dependencies
+      npm:
+        path: "/home/vagrant/checkbox.io/server-side/site"
+
+    - name: "Install forever"
+      npm: name=forever global=yes state=present
+      become: yes
+
+    - name: "Install forever-monitor"
+      npm: name=forever-monitor global=yes state=present
+      become: yes
+
+    - name: "Install forever-monitor"
+      npm: name=express global=yes state=present
+      become: yes
+
+    - name: "Check list of node apps running."
+      command: forever list
+      register: forever_list
+      changed_when: false
+
+    - name: "start checkboxio at vm"
+      command: forever start --minUptime 1000 --spinSleepTime 100 -o out.log -e err.log server.js
+      args:
+          chdir: /home/vagrant/checkbox.io/server-side/site/
+      when: "forever_list.stdout.find('/home/vagrant/checkbox.io/server-side/site/server.js') == -1"
+      environment:
+        APP_PORT: 3002
+        MONGO_IP: 127.0.0.1
+        MONGO_USER: '{{dbuser}}'
+        MONGO_PASSWORD: '{{dbpwd}}'
+        MAIL_USER: '{{mailuser}}'
+        MAIL_PASSWORD: '{{mailpwd}}'
+        MAIL_SMTP: 'smtp.gmail.com'
+      become: true

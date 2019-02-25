@@ -1,0 +1,8 @@
+---
+  checkboxio_job_name: "checkbox_job"
+  itrust_name: "itrust_job"
+  jenkins_url: "http://localhost:8080"
+  jenkins_password: "Sunmoon@12"
+  jenkins_user_name: "jenkins"
+
+...

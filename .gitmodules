@@ -1,0 +1,6 @@
+[submodule "milestone1/servers/jenkins/push_deploy/DevopsProject"]
+	path = milestone1/servers/jenkins/push_deploy/DevopsProject
+	url = https://github.ncsu.edu/sseelam2/DevopsProject.git
+[submodule "milestone1/servers/jenkins/push_deploy/checkbox.io"]
+	path = milestone1/servers/jenkins/push_deploy/checkbox.io
+	url = https://github.com/sseelam2/checkbox.io.git
