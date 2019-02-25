@@ -21,6 +21,19 @@ Srijani Hariraman –> sharira
 
 Harish Annamalai Palaniappan –> hpalani
 
+## Setting up the repository:
+We need to setup three servers each for jenkins, checkbox.io and iTrust. We need to generate a ssh key inside the jenkins server and add it to checkbox.io server and ITrust server.
+
+
+
+
+
+
+To set up Jenkins,
+
+run ansible-playbook jenkins.yml -i inventory --ask-vault-pass
+Vault password is 12345.
+
 ## Setting up Jenkins server:
 We wrote an ansible playbook to install jenkins server automatically by adding the jenkins repo key and downloading the stable version of jenkins. We also completed the setup wizard automatically using groovy script and installed the necessary plugins for jenkins.  
 
@@ -42,7 +55,4 @@ We have created the build job using jenkins job builder. For building iTrust we 
 ## Screencast Video:
 
 
-To set up Jenkins,
 
-run ansible-playbook jenkins.yml -i inventory --ask-vault-pass
-Vault password is 12345.
