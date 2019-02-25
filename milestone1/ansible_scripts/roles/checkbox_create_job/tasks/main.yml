@@ -5,7 +5,6 @@
     line: "jenkins ALL=(ALL) NOPASSWD: ALL"
   become: true
 
-
 - name: Copy checkbox job builder script
   template:
       src: ~/milestone1/ansible_scripts/roles/checkbox_create_job/templates/checkboxio_job_create.yml
@@ -14,7 +13,6 @@
 - name: create jobs
   shell: 'sudo jenkins-jobs --conf ~/jenkins_jobs.ini update ~/jobs'
   
-
 - name: check if checkbox git folder exists
   stat:
     path: "/var/lib/jenkins/workspace/checkbox_job/checkbox.io/"

@@ -24,12 +24,47 @@
      state: present
      update_cache: yes
     become: true
-  
-  - name: npm install 
-    shell: 
-      apt install npm -y
+
+  - name: change Jenkins port
+    replace:
+      path: /etc/default/jenkins
+      regexp: "HTTP_PORT=5001"
+      replace: "HTTP_PORT=8080"
     become: true
 
+  - name: Restarting Jenkins
+    service:
+      name: jenkins
+      state: restarted
+    become: true
+
+  - name: Wait for jenkins to restart
+    wait_for: 
+      port: 8080
+      delay: 30
+  - name: install nodejs
+    shell: curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+    become: yes
+
+  - name: install node latest package
+    become: yes
+    apt:
+      name: nodejs
+      state: present
+      update_cache: yes
+      force: yes
+
+  - name: npm install 
+    shell: 
+      sudo apt install npm -y
+    ignore_errors: yes
+
+  - name: install pm2
+    shell: sudo npm install pm2 -g
+
+  - name: install mocha
+    shell: sudo npm install mocha -g 
+    
   - name: install git
     apt:
      name: git
