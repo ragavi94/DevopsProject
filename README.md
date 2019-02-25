@@ -41,3 +41,8 @@ We have created the build job using jenkins job builder. For building iTrust we 
 
 # Screencast Video:
 
+
+To set up Jenkins,
+
+run ansible-playbook jenkins.yml -i inventory --ask-vault-pass
+Vault password is 12345.
