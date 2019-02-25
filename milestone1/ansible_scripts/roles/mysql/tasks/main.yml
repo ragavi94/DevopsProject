@@ -26,4 +26,25 @@
 - name: Restart mysql service
   service: name=mysql state=restarted
   become: true
+
+- name: mysql.conf file changes
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    line: skip-grant-tables
+    insertafter: skip-external-locking
+  become: true
+
+- name: Commenting the bind address
+  lineinfile:
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    state: present
+    regexp: '^(.*)bind-address' 
+    line: '#bind-address    = 127.0.0.1'
+    remote_src: yes
+    backrefs: yes
+  become: true
+
+- name: Restart mysql
+  service: name=mysql state=restarted
+  become: yes
 ...

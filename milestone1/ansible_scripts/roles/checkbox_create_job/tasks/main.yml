@@ -60,7 +60,98 @@
     port: 8080
     delay: 30
 
-- name: build checkbox job
-  shell: 'java -jar jenkins-cli.jar -s {{ jenkins_url }}/ build {{ checkboxio_job_name }} --username {{ jenkins_user_name }} --password {{ jenkins_password }}'
+- name: Install required packages
+  become: yes
+  with_items:
+    - nginx
+    - git
+    - mongodb
+    - python-pip
+    - python3-setuptools
+  apt:
+    name: '{{item}}'
+    state: latest
+    update_cache: yes
+    force: yes
+
+- name: Install pip3
+  shell: 'easy_install3 pip'
   become: true
+
+- name: Install pymongo
+  become: yes
+  pip:
+    name: pymongo
+    state: latest
+
+- name: dotenv environment install
+  shell: "sudo npm install dotenv"
+
+- name: Install Repository keys
+  apt_key: state=present keyserver=keyserver.ubuntu.com id=2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
+  become: yes
+
+- name: Download MongoDB repository
+  shell: 
+    echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
+  become: yes
+
+- name: Update and Upgrade
+  apt:
+    update_cache: yes
+  become: true
+
+- name: MongoDB Repo installation
+  apt: name=mongodb-org update_cache=true cache_valid_time=600
+  become: yes
+
+- name: Set permissions for mongodb storage
+  file: path=/data/db owner=vagrant group=mongodb mode=0775 state=absent
+  become: yes
+
+- name: Set permissions for mongodb storage
+  file: path=/data/db owner=vagrant group=mongodb mode=0775 state=directory
+  become: yes
+
+- name: start the mongod service
+  service: name=mongod state=started
+  become: yes
+
+- name: add admin user
+  mongodb_user: database=admin name="admin" password="admin" login_port=27017 state=present roles=userAdminAnyDatabase,readWriteAnyDatabase,dbAdminAnyDatabase,clusterAdmin
+  become: yes
+  ignore_errors: yes
+
+- name: restart mongod service
+  service: name=mongod state=restarted
+  become: yes
+
+- name: setting environment variables
+  lineinfile:
+    path: /etc/environment
+    insertafter: '^PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games" '
+    line: "{{ item }}"
+  with_items:
+    - APP_PORT=3002
+    - MONGO_IP=127.0.0.1
+    - MONGO_USER='admin'
+    - MONGO_PASSWORD='admin'
+    - MAIL_USER='swarna.ragz'
+    - MAIL_PASSWORD='Ramswar3151&'
+    - MAIL_SMTP='smtp.gmail.com'
+  become: true
+
+- name: set source
+  sudo: no
+  shell: source /etc/environment
+  args:
+    executable: /bin/bash
+
+- name: kill existing process
+  shell: sudo kill -9 $(lsof -t -i:3002)
+  args:
+    executable: /bin/bash
+
+  
+
 ...

@@ -89,12 +89,4 @@
   when: git.stat.exists
   become: true
 
-
-
-- name: build itrust job
-  shell: 'java -jar jenkins-cli.jar -s {{ jenkins_url2 }}/ build {{ itrust_name }} --username {{ jenkins_user_name }} --password {{ jenkins_password }}'
-  become: true
-
-
-
 ...
