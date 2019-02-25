@@ -25,7 +25,7 @@ Harish Annamalai Palaniappan –> hpalani
 We wrote an ansible playbook to install jenkins server automatically by adding the jenkins repo key and downloading the stable version of jenkins. We also completed the setup wizard automatically using groovy script and installed the necessary plugins for jenkins.  
 
 # Challenges faced:
-We faced an issue while setting up the jenkins user and completing the set up wizard automatically. We resolved this by writing a groovy script under the jenkins_script module in ansible.  
+We faced an issue while setting up the jenkins user and completing the set up wizard automatically. We resolved this by writing a groovy script under the jenkins_script module in ansible. Learnt about vault feature in ansible for encrypting password.
 
 # Creating a build job for checkbox.io and the post-build job:
 We have created the build job using jenkins job builder. For building the checkbox.io we are cloning the repository into the workspace of jenkins and running the jenkins-cli.jar on this giing the appropriate jenkins credentials. 
