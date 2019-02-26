@@ -22,16 +22,14 @@ Srijani Hariraman –> sharira
 Harish Annamalai Palaniappan –> hpalani
 
 ## Setting up the repository:
-We need to setup three servers each for jenkins, checkbox.io and iTrust. We need to generate a ssh key inside the jenkins server and add it to checkbox.io server and ITrust server.
+We need to setup servers for jenkins, checkbox.io and iTrust. Jenkins virtual machine is for setting up jenkins and also for running the build jobs of checkbox.io and iTrust. Checkbox.io and iTrust virtual machines are for deploying the project. We need to generate a ssh key inside the jenkins server and add it to the checkbox.io server and iTrust server.
+To run this project, clone the "DevopsProject" repository into your machine and copy the milestone folder into your home directory.
+####Inventory files should be changed in the below two paths according to your virtual machines' configuration.
+/home/swetha/DevopsProject/milestone1/ansible_scripts
+/home/swetha/DevopsProject/milestone1/servers/jenkins
 
-
-
-
-
-
-To set up Jenkins,
-
-run ansible-playbook jenkins.yml -i inventory --ask-vault-pass
+####Run the below command to set up jenkins.
+ansible-playbook jenkins.yml -i inventory --ask-vault-pass
 Vault password is 12345.
 
 ## Setting up Jenkins server:
@@ -42,6 +40,8 @@ We faced an issue while setting up the jenkins user and completing the set up wi
 
 ## Creating a build job for checkbox.io and the post-build job:
 We have created the build job using jenkins job builder. For building the checkbox.io we are cloning the repository into the workspace of jenkins and running the jenkins-cli.jar on this giving the appropriate jenkins credentials. 
+
+-- git hook procedure
 
 ## Challenges faced:
 We were not able to build checkbox.io due to the  Anonymous read access error. We had to edit the following line <denyAnonymousReadAccess>false</denyAnonymousReadAccess> in the config.xml file under the jenkins folder.
