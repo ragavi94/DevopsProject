@@ -14,17 +14,17 @@
   shell: cp ~/jenkins_jobs.ini ~/itrust_jobs.ini
 
 - name: change Jenkins port in ini
-  lineinfile:
+  replace:
     path: ~/itrust_jobs.ini
     regexp: "url=http://192.168.33.12:8080" 
-    line: "url=http://192.168.33.12:5001"
+    replace: "url=http://192.168.33.12:5001"
   
 
 - name: change Jenkins port
-  lineinfile:
+  replace:
     path: /etc/default/jenkins
     regexp: "HTTP_PORT=8080"
-    line: "HTTP_PORT=5001"
+    replace: "HTTP_PORT=5001"
   become: true
 
 - name: Restarting Jenkins
