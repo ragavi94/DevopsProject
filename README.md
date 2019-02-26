@@ -13,13 +13,9 @@ The following tasks were required to be completed in this milestone:
 
 ## Contribution:
 
-Ragavi Swarnalatha Raman -> rraman2
-
-Swetha Seelam Lakshmi Narayanan –> sseelam2
+Ragavi Swarnalatha Raman -> rraman2 and Swetha Seelam Lakshmi Narayanan –> sseelam2 -- Worked on creating build job for checkbox.io and iTrust and created githooks to trigger a build when push is made to the repo
  
-Srijani Hariraman –> sharira
-
-Harish Annamalai Palaniappan –> hpalani
+Srijani Hariraman –> sharira and Harish Annamalai Palaniappan –> hpalani -- Worked on provisioning and configuring Jenkins server on remote VM automatically using Ansible and creating build job for iTrust.
 
 ## Setting up the repository:
 We need to setup servers for jenkins, checkbox.io and iTrust. Jenkins virtual machine is for setting up jenkins and also for running the build jobs of checkbox.io and iTrust. Checkbox.io and iTrust virtual machines are for deploying the project. We need to generate a ssh key inside the jenkins server and add it to the checkbox.io server and iTrust server.
