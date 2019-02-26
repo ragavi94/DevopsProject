@@ -23,12 +23,13 @@ Harish Annamalai Palaniappan –> hpalani
 
 ## Setting up the repository:
 We need to setup servers for jenkins, checkbox.io and iTrust. Jenkins virtual machine is for setting up jenkins and also for running the build jobs of checkbox.io and iTrust. Checkbox.io and iTrust virtual machines are for deploying the project. We need to generate a ssh key inside the jenkins server and add it to the checkbox.io server and iTrust server.
-To run this project, clone the "DevopsProject" repository into your machine and copy the milestone folder into your home directory.
-####Inventory files should be changed in the below two paths according to your virtual machines' configuration.
+To run this project, clone the "DevopsProject" repository into your machine and copy the milestone folder into your home directory.  </br>
+
+Inventory files should be changed in the below two paths according to your virtual machines' configuration.
 /home/swetha/DevopsProject/milestone1/ansible_scripts
 /home/swetha/DevopsProject/milestone1/servers/jenkins
 
-####Run the below command to set up jenkins.
+Run the below command to set up jenkins.
 ansible-playbook jenkins.yml -i inventory --ask-vault-pass
 Vault password is 12345.
 
