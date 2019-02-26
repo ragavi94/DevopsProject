@@ -40,22 +40,28 @@ We wrote an ansible playbook to install jenkins server automatically by adding t
 We faced an issue while setting up the jenkins user and completing the set up wizard automatically. We resolved this by writing a groovy script under the jenkins_script module in ansible. Learnt about vault feature in ansible for encrypting password.
 
 ## Creating a build job for checkbox.io and the post-build job:
-We have created the build job using jenkins job builder. For building the checkbox.io we are cloning the repository into the workspace of jenkins and running the jenkins-cli.jar on this giving the appropriate jenkins credentials. 
-
--- git hook procedure
+We have created the build job using jenkins job builder. For building the checkbox.io we are cloning the repository into the workspace of jenkins and running the jenkins-cli.jar on this giving the appropriate jenkins credentials. </br>
+We have created a git hook for this process. Checkbox.io builds whenever code changes are pushed into git.</br>
+Make changes in the below folder and push the code to git to see the checkbox.io build happen.</br>
+/home/swetha/DevopsProject/milestone1/servers/jenkins/push_deploy/checkbox.io
 
 ## Challenges faced:
 We were not able to build checkbox.io due to the  Anonymous read access error. We had to edit the following line <denyAnonymousReadAccess>false</denyAnonymousReadAccess> in the config.xml file under the jenkins folder.
  
 ## Creating a build job for iTrust and the post-build job:
-We have created the build job using jenkins job builder. For building iTrust we are cloning the repository into the workspace of jenkins and running the jenkins-cli.jar on this giving the appropriate jenkins credentials.
+We have created the build job using jenkins job builder. For building iTrust we are cloning the repository into the workspace of jenkins and running the jenkins-cli.jar on this giving the appropriate jenkins credentials. </br>
+We have created a git hook for this process. iTrust builds whenever code changes are pushed into git.</br>
+Make changes in the below folder and push the code to git to see the iTrust build happen.</br>
+/home/swetha/DevopsProject/milestone1/servers/jenkins/push_deploy/iTrust
 
 ## Challenges faced:
-
+We were not able to make the tests of iTrust pass. 
 
 ## Screencast Video:
 
-Provisioning and configuring Jenkins server - https://drive.google.com/file/d/1P6CRbilkWf46xHen8qOb3-NZgB9g_2qw/view?usp=sharing
+Provisioning and configuring Jenkins server </br>
+https://drive.google.com/file/d/1P6CRbilkWf46xHen8qOb3-NZgB9g_2qw/view?usp=sharing
 
-Checkbox.io - https://drive.google.com/file/d/16Oq-StbEQrrEjj_t-BK95-mLGIPsx3fp/view?usp=sharing
+Checkbox.io </br>
+https://drive.google.com/file/d/16Oq-StbEQrrEjj_t-BK95-mLGIPsx3fp/view?usp=sharing
 
