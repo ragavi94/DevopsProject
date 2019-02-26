@@ -43,7 +43,8 @@ We have created the build job using jenkins job builder. For building the checkb
 
 -- git hook procedure
 
-## Challenges faced:
+## Challenges fa
+ced:
 We were not able to build checkbox.io due to the  Anonymous read access error. We had to edit the following line <denyAnonymousReadAccess>false</denyAnonymousReadAccess> in the config.xml file under the jenkins folder.
  
 ## Creating a build job for iTrust and the post-build job:
@@ -54,5 +55,7 @@ We have created the build job using jenkins job builder. For building iTrust we 
 
 ## Screencast Video:
 
+Provisioning and configuring Jenkins server - https://drive.google.com/file/d/1P6CRbilkWf46xHen8qOb3-NZgB9g_2qw/view?usp=sharing
 
+Checkbox.io - https://drive.google.com/file/d/16Oq-StbEQrrEjj_t-BK95-mLGIPsx3fp/view?usp=sharing
 
