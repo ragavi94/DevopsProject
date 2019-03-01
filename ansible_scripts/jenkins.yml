@@ -1,0 +1,13 @@
+- name: jenkins installation
+  hosts: jenkins
+
+  roles:
+    - java_2
+    - java
+    - maven
+    - mysql
+    - jenkins
+
+   
+
+

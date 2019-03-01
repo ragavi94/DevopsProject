@@ -1,0 +1,12 @@
+- job:
+    name: "{{itrust_name}}"
+    description: 'creating job'
+    project-type: freestyle
+    builders:
+      - shell: |  
+          'sudo git clone sseelam2:Sunmoonstars@12@github.ncsu.edu:engr-csc326-staff/iTrust2-v4.git'
+          'sudo cp /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v2/iTrust2/src/main/resources/hibernate.properties.template /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/resources/hibernate.properties'
+          'sudo cp /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v2/iTrust2/src/main/java/db.properties.template /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties'
+          'sudo cp /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v2/iTrust2/src/main/java/email.properties.template /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties'
+          'cd /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/'
+

@@ -1,0 +1,96 @@
+---
+- name: enabling access to mvn without password 
+  lineinfile:
+    path: /etc/sudoers
+    line: "jenkins ALL=(ALL) NOPASSWD: ALL"
+  become: true
+
+- name: Copy itrust job builder script
+  template:
+      src: ~/milestone1/ansible_scripts/roles/itrust_create_job/templates/itrust_job_create.yml
+      dest: /home/vagrant/jobs/itrust_job.yml
+
+- name: copy jenkins_jobs to iTrust_jobs
+  shell: cp ~/jenkins_jobs.ini ~/itrust_jobs.ini
+
+- name: change Jenkins port in ini
+  replace:
+    path: ~/itrust_jobs.ini
+    regexp: "url=http://192.168.33.12:8080" 
+    replace: "url=http://192.168.33.12:5001"
+  
+
+- name: change Jenkins port
+  replace:
+    path: /etc/default/jenkins
+    regexp: "HTTP_PORT=8080"
+    replace: "HTTP_PORT=5001"
+  become: true
+
+- name: Restarting Jenkins
+  service:
+    name: jenkins
+    state: restarted
+  become: true
+
+- name: Wait for jenkins to restart
+  wait_for: 
+    port: 5001
+    delay: 60
+
+  
+- name: create jobs
+  shell: 'sudo jenkins-jobs --conf ~/itrust_jobs.ini update ~/jobs'
+
+- name: jenkins cli download
+  get_url:
+    url: '{{ jenkins_url2 }}/jnlpJars/jenkins-cli.jar'
+    dest: /home/vagrant/jenkins-cli.jar
+    timeout: 30
+    mode: 0777
+    owner: vagrant
+    group: vagrant
+  become: true
+
+- name: Change StrictHostKeyChecking to no
+  lineinfile: 
+    path: /etc/ssh/ssh_config
+    regexp: '#   StrictHostKeyChecking ask'
+    line: '   StrictHostKeyChecking no'
+  become: true
+
+- name: changing config.xml
+  lineinfile:
+    path: /var/lib/jenkins/config.xml
+    regexp: '    <denyAnonymousReadAccess>true</denyAnonymousReadAccess>'
+    line: '    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>'
+  become: true
+
+- name: Restarting Jenkins
+  service:
+    name: jenkins
+    state: restarted
+  become: true
+
+- name: Wait for jenkins to restart
+  wait_for: 
+    port: 5001
+    delay: 30
+
+- name: check if itrust git folder exists
+  stat:
+    path: "/var/lib/jenkins/workspace/{{ itrust_name }}/iTrust2-v4/"
+  register: git
+
+- name: delete if the itrust directory exists
+  file:
+    state: absent
+    path: "/var/lib/jenkins/workspace/{{ itrust_name }}/iTrust2-v4/"
+  when: git.stat.exists
+  become: true
+
+- name: build itrust job
+  shell: 'java -jar jenkins-cli.jar -s {{ jenkins_url2 }}/ build {{ itrust_name }} --username {{ jenkins_user_name }} --password {{ jenkins_password }}'
+  become: true
+
+...
