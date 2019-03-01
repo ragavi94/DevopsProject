@@ -5,9 +5,19 @@
     line: "jenkins ALL=(ALL) NOPASSWD: ALL"
   become: true
 
+- name: mysql.conf file changes
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    line: skip-grant-tables
+    insertafter: skip-external-locking
+
+- name: Restart mysql
+  service: name=mysql state=restarted
+  become: yes
+
 - name: Copy itrust job builder script
   template:
-      src: ~/milestone1/ansible_scripts/roles/itrust_create_job/templates/itrust_job_create.yml
+      src: "{{ project_url }}"
       dest: /home/vagrant/jobs/itrust_job.yml
 
 - name: copy jenkins_jobs to iTrust_jobs
@@ -21,10 +31,10 @@
   
 
 - name: change Jenkins port
-  lineinfile:
+  replace:
     path: /etc/default/jenkins
-    regexp: "HTTP_PORT=8080"
-    line: "HTTP_PORT=5001"
+    regexp: 'HTTP_PORT=8080'
+    replace: "HTTP_PORT=5001"
   become: true
 
 - name: Restarting Jenkins
@@ -89,4 +99,7 @@
   when: git.stat.exists
   become: true
 
+- name: build itrust job
+  shell: 'java -jar jenkins-cli.jar -s {{ jenkins_url2 }}/ build {{ itrust_name }} --username {{ jenkins_user_name }} --password {{ jenkins_password }}'
+  become: true
 ...

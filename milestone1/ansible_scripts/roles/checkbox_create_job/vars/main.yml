@@ -8,5 +8,6 @@
   dbpwd: "admin"
   mailuser: "swarna.ragz"
   mailpwd: "Ramswar3151&"
+  project_url: "~/DevopsProject/milestone1/ansible_scripts/roles/checkbox_create_job/templates/checkboxio_job_create.yml"
 
 ...

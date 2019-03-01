@@ -7,7 +7,7 @@
 
 - name: Copy checkbox job builder script
   template:
-      src: ~/milestone1/ansible_scripts/roles/checkbox_create_job/templates/checkboxio_job_create.yml
+      src: "{{ project_url }}"
       dest: /home/vagrant/jobs/checkbox_job.yml
   
 - name: create jobs

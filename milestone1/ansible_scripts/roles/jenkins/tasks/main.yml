@@ -198,13 +198,13 @@
       
   - name: Add config file for ssh for github ncsu host
     copy:
-      src: ~/milestone1/ansible_scripts/roles/jenkins/templates/config
+      src: "{{ project_path_jenkins }}"
       dest: /root/.ssh/config
     become: true
 
   - name: Copy jenkins_jobs.ini file to jenkins server
     template:
-      src: ~/milestone1/ansible_scripts/roles/jenkins/templates/jobs.ini
+      src: "{{ project_path_jenkinsjobs }}"
       dest: ~/jenkins_jobs.ini
 
   - name: create jobs folder to create jobs if it doesn't exit
