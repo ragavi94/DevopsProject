@@ -1,5 +1,0 @@
-- name: checkbox installation
-  hosts: jenkins
-
-  roles:
-    - checkbox_create_job

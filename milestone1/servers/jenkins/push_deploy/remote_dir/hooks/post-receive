@@ -1,5 +1,0 @@
-#!/bin/sh
-
-WORKING_DIR=/var/lib/jenkins/workspace/checkbox_job/checkbox.io/
-if [ -d "$WORKING_DIR" ]; then sudo rm -Rf $WORKING_DIR; fi 
-/usr/bin/java -jar /home/vagrant/jenkins-cli.jar -s http://localhost:8080/ build checkbox_job --username jenkins --password Sunmoon@12

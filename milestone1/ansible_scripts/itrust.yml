@@ -1,8 +1,0 @@
-- name: itrust installation
-  hosts: jenkins
-
-  roles:
-    - java
-    - maven
-    - mysql
-    - itrust_create_job

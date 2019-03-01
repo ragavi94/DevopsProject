@@ -1,7 +1,0 @@
-name: itrust.srv
-vm:
-  ip: 192.168.33.15
-tools:
-  - ansible
-
-

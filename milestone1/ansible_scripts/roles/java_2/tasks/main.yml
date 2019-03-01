@@ -1,7 +1,0 @@
-
-  - name: install jre8
-    apt:
-     name: openjdk-8-jre
-     state: present
-     update_cache: yes
-    become: yes

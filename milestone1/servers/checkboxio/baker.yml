@@ -1,7 +1,0 @@
-name: checkbox.srv
-vm:
-  ip: 192.168.33.13
-tools:
-  - ansible
-
-
