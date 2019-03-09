@@ -14,8 +14,6 @@
             cp /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties.template /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties
             cp /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties        
             cd /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/
-            mvn clean test verify checkstyle:checkstyle
-    publishers:
         - postbuildscript:
             builders:
                 - role: BOTH
