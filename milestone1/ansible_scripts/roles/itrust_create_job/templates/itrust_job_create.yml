@@ -4,16 +4,20 @@
     project-type: freestyle
     builders:
       - shell: |  
-            sudo su
             git clone http://github.com/sseelam2/iTrust2-v4.git
-            sed -i 's/username root/username mysql-server/' "/var/lib/jenkins/workspace/{{ itrust_name }}/iTrust2-v4/iTrust2/src/main/java/db.properties.template"
-            sed -i 's/password/password {{ mysql_password }}/' "/var/lib/jenkins/workspace/{{ itrust_name }}/iTrust2-v4/iTrust2/src/main/java/db.properties.template"
-            sed -i 's/username/username swarna.ragz@gmail.com/' "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template"
-            sed -i 's/password/password Ramswar3151\&/' "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template"
+            sudo sed -i 's/username root/username mysql-server/' "/var/lib/jenkins/workspace/{{ itrust_name }}/iTrust2-v4/iTrust2/src/main/java/db.properties.template"
+            sudo sed -i 's/password/password {{ mysql_password }}/' "/var/lib/jenkins/workspace/{{ itrust_name }}/iTrust2-v4/iTrust2/src/main/java/db.properties.template"
+            sudo sed -i 's/from/from No-Reply/' "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template"
+            sudo sed -i 's/user/user harish4795/' "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template"
+            sudo sed -i 's/password/password uppercasee/' "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template"
             cd /var/lib/jenkins/workspace/itrust_job/iTrust2-v4/iTrust2/src/main/java
-            cp /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties.template /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties
-            cp /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties        
+            sudo cp /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties.template /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties
+            sudo cp /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties        
             cd /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/
+            mvn -f pom-data.xml process-test-classes
+            cd /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/   
+            mvn clean test verify checkstyle:checkstyle
+    publishers:
         - postbuildscript:
             builders:
                 - role: BOTH
