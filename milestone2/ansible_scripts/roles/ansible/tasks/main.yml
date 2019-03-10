@@ -1,0 +1,20 @@
+---
+- name: adding ansible repository
+  become: yes
+  apt_repository:
+    repo: 'ppa:ansible/ansible'
+
+- name: ansible installation
+  become: yes
+  apt:
+    name: ansible
+    state: latest
+    update_cache: yes
+    force: yes
+
+- name: Turn off Host Key Checking
+  replace:
+    dest: /etc/ansible/ansible.cfg
+    regexp: '#host_key_checking'
+    replace: 'host_key_checking'
+  become: true

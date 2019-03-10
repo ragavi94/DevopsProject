@@ -1,0 +1,138 @@
+---
+- name: enabling access to mvn without password 
+  lineinfile:
+    path: /etc/sudoers
+    line: "jenkins ALL=(ALL) NOPASSWD: ALL"
+  become: true
+
+- name: Copy iTrust builder ansible playbook
+  copy:
+    src: "~/DevopsProject/milestone2/ansible_scripts/roles/itrust_create_job/templates/itrust_build_tmp.yml"
+    dest: /var/lib/jenkins/itrust_build_tmp.yml
+    owner: jenkins
+    group: jenkins
+    mode: 0666
+  become: true
+
+- name: Copy iTrust builder fuzzer ansible playbook
+  copy:
+    src: "~/DevopsProject/milestone2/ansible_scripts/roles/itrust_create_job/templates/itrust_build_fuzzer.yml"
+    dest: /var/lib/jenkins/itrust_build_fuzzer.yml
+    owner: jenkins
+    group: jenkins
+    mode: 0666
+  become: true
+
+- name: copy inventory file used for ansible playbooks
+  copy:
+    src: "~/DevopsProject/milestone2/ansible_scripts/roles/itrust_create_job/templates/local_inventory"
+    dest: /var/lib/jenkins/local_inventory
+    owner: jenkins
+    group: jenkins
+    mode: 0666
+  become: true
+
+
+- name: Copy itrust job builder script
+  template:
+      src: ~/DevopsProject/milestone2/ansible_scripts/roles/itrust_create_job/templates/itrust_job_create.yml
+      dest: /home/vagrant/jobs/itrust_job.yml
+
+- name: Copy itrust job builder script
+  template:
+      src: ~/DevopsProject/milestone2/ansible_scripts/roles/itrust_create_job/templates/itrust_fuzzer_script.yml
+      dest: /home/vagrant/jobs/itrust_fuzzer_script.yml
+
+- name: copy jenkins_jobs to iTrust_jobs
+  shell: cp ~/jenkins_jobs.ini ~/itrust_jobs.ini
+
+- name: change Jenkins port in ini
+  replace:
+    path: ~/itrust_jobs.ini
+    regexp: "{{ jobs_ini_url }}:8080" 
+    replace: "{{ jobs_ini_url }}:5001"
+  
+- name: change Jenkins port
+  replace:
+    path: /etc/default/jenkins
+    regexp: "HTTP_PORT=8080"
+    replace: "HTTP_PORT=5001"
+  become: true
+
+- name: Restarting Jenkins
+  service:
+    name: jenkins
+    state: restarted
+  become: true
+
+- name: Wait for jenkins to restart
+  wait_for: 
+    port: 5001
+    delay: 60
+
+  
+- name: create jobs
+  shell: 'sudo jenkins-jobs --conf ~/itrust_jobs.ini update ~/jobs'
+
+- name: jenkins cli download
+  get_url:
+    url: '{{ jenkins_url2 }}/jnlpJars/jenkins-cli.jar'
+    dest: /home/vagrant/jenkins-cli.jar
+    timeout: 30
+    mode: 0777
+    owner: vagrant
+    group: vagrant
+  become: true
+
+- name: Change StrictHostKeyChecking to no
+  lineinfile: 
+    path: /etc/ssh/ssh_config
+    regexp: '#   StrictHostKeyChecking ask'
+    line: '   StrictHostKeyChecking no'
+  become: true
+
+- name: changing config.xml
+  lineinfile:
+    path: /var/lib/jenkins/config.xml
+    regexp: '    <denyAnonymousReadAccess>true</denyAnonymousReadAccess>'
+    line: '    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>'
+  become: true
+
+- name: Restarting Jenkins
+  service:
+    name: jenkins
+    state: restarted
+  become: true
+
+- name: Wait for jenkins to restart
+  wait_for: 
+    port: 5001
+    delay: 30
+
+- name: check if itrust git folder exists
+  stat:
+    path: "/var/lib/jenkins/workspace/{{ itrust_name }}/iTrust2-v4/"
+  register: git
+
+- name: delete if the itrust directory exists
+  file:
+    state: absent
+    path: "/var/lib/jenkins/workspace/{{ itrust_name }}/iTrust2-v4/"
+  when: git.stat.exists
+  become: true
+
+
+- name: Creating new directory for test_reports
+  file:
+    path: /home/vagrant/fuzzer_test_reports
+    state: directory
+    mode: 0766
+
+#- name: build itrust job
+#  shell: 'java -jar jenkins-cli.jar -s {{ jenkins_url2 }}/ build {{ itrust_name }} --username {{ jenkins_user_name }} --password {{ jenkins_password }}'
+#  become: true
+
+- name: build itrust job2
+  shell: 'java -jar jenkins-cli.jar -s {{ jenkins_url2 }}/ build {{ itrust_fuzzer_name }} --username {{ jenkins_user_name }} --password {{ jenkins_password }}'
+  become: true
+...

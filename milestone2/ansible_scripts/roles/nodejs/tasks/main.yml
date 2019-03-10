@@ -1,0 +1,12 @@
+---
+- name: Nodejs Repository
+  shell: curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
+  become: yes
+
+- name: Installing latest nodejs package
+  become: yes
+  apt:
+    name: nodejs
+    state: latest
+    update_cache: yes
+    force: yes

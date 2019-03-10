@@ -1,0 +1,7 @@
+name: jenkins
+vm:
+  ip: 192.168.33.72
+tools:
+  - ansible
+
+

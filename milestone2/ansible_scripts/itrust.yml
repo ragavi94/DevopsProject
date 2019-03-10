@@ -1,0 +1,5 @@
+- name: itrust installation
+  hosts: jenkins
+
+  roles:
+    - itrust_create_job

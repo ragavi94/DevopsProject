@@ -1,0 +1,13 @@
+---
+  itrust_name: "itrust_job"
+  itrust_fuzzer_name: "itrust_fuzzer_job"
+  jenkins_url: "http://localhost:8080"
+  jenkins_password: "Sunmoon@12"
+  jenkins_user_name: "jenkins"
+  username: "devopshrss"
+  password: "smsmmsme"
+  mysql_password: "root"
+  jenkins_url2: "http://localhost:5001"
+  jobs_ini_url: "url=http://192.168.33.72"
+
+...
