@@ -114,7 +114,7 @@ const triggerJenkinsBuild = (jenkinsIP, jenkinsToken, githubURL, sha1) => {
     try {
     console.log("\n $$$$$$$$$$$ SHA1: ",sha1);
         console.log("http://${jenkinsIP}:8090/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}")
-        child_process.execSync(`curl "http://${jenkinsIP}:8090/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}"`)
+        child_process.execSync(`curl "http://${jenkinsIP}:5001/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}"`)
         console.log(`Succesfully trigger build for fuzzer:${sha1}`)
     } catch (error) {
         console.log(`Couldn't trigger build for fuzzer:${sha1}`)
