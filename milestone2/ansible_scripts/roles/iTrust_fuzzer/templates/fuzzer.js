@@ -1,6 +1,9 @@
 const fs = require('fs')
 const path = require('path');
 var Random = require("random-js");
+const child_process = require('child_process')
+var http = require('http');
+
 var files= [];
 var count=10;
 var getFiles= function (dir, done) {
@@ -33,7 +36,7 @@ var getFiles= function (dir, done) {
                         if (!--pending) done(null, files);
                     });
                 } else {
-                    if(file.split('.')[1]=="yml"){
+                    if(file.split('.')[1]=="java"){
                     files.push(file);}
 
                     if (!--pending) done(null, files);
@@ -48,7 +51,6 @@ var getFiles= function (dir, done) {
     });
     return files;
 };
-
 var fuzzer = 
 {
     random : new Random(Random.engines.mt19937().seed(0)),
@@ -95,19 +97,49 @@ var fuzzer =
 }
 }
 
-var fuzzerFiles = function(fuzzCount) {
-    var fuzzingFiles = getFiles('src/main/java/edu/ncsu/csc/itrust2/');
-    for (var i = 0; i < fuzzCount; i++) {
-        for (var j = 0; j < fileCount; j++){
-            fuzzer(fuzzingFiles[j]);
-        }
-        execSync(`git add .`);
-        execSync(`git commit -m "Git commit after fuzzer tests"`)
-        execSync(`java -jar /tmp/jenkins-cli.jar -s http://{{inventory_hostname}}:8080/ build iTrust_Fuzzer -s --username {{jenkins_url_username}} --password {{jenkins_url_password}}|| exit 0`)
-        execSync(`git reset --hard HEAD~1`)
-        console.log("Fuzz " + (i+1) + " executed")
+const commitFuzzer = (master_sha1, n) => {
+    
+    child_process.execSync(`git stash && git checkout fuzzer && git checkout stash -- . && git commit -am "Fuzzing :${master_sha1}: # ${n+1}" && git push`)
+    child_process.execSync('git stash drop');
+    let lastSha1 = child_process.execSync(`git rev-parse fuzzer`).toString().trim()
+    return lastSha1;
+}
+
+const reverToFirstCommit = (firstSha1, n) => {
+    
+    child_process.execSync(`git checkout ${firstSha1}`)
+}
+
+const triggerJenkinsBuild = (jenkinsIP, jenkinsToken, githubURL, sha1) => {
+    try {
+    console.log("\n $$$$$$$$$$$ SHA1: ",sha1);
+        console.log("http://${jenkinsIP}:8090/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}")
+        child_process.execSync(`curl "http://${jenkinsIP}:8090/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}"`)
+        console.log(`Succesfully trigger build for fuzzer:${sha1}`)
+    } catch (error) {
+        console.log(`Couldn't trigger build for fuzzer:${sha1}`)
     }
 }
 
 
-fuzzerFiles (count);
+const runFuzzingProcess = (n) => {
+    let master_sha1 = process.env.MASTER_SHA1;
+    let sha1 = process.env.SHA1;
+    let jenkinsIP = process.env.JENKINS_IP;
+    let jenkinsToken = process.env.JENKINS_BUILD_TOKEN;
+    let githubURL = process.env.GITHUB_URL;
+    for (var i = 0; i < n; i++) {
+        let javaPaths = getFiles('iTrust2/src/main/java/edu/ncsu/csc/itrust2',function(err,data){
+        reverToFirstCommit(sha1)
+        javaPaths.forEach(javaPath =>{
+            let rnd = Math.random();
+            if(rnd > 0.35)
+                fuzzer(javaPath);
+            });
+        })
+        let lastSha1 = commitFuzzer(master_sha1, i);
+        triggerJenkinsBuild(jenkinsIP, jenkinsToken, githubURL, lastSha1)
+    }
+}
+
+runFuzzingProcess(1);

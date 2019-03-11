@@ -1,38 +1,38 @@
 ---
     - name: check if itrust workspace folder exists
       stat:
-        path: "~/Project/iTrust2-v4"
+        path: "{{ itrust_dir }}/iTrust2-v4"
       register: workspace
 
     - name: delete if the itrust directory exists
       file:
         state: absent
-        path: "~/Project/iTrust2-v4"
+        path: "{{ itrust_dir }}/iTrust2-v4"
       when: workspace.stat.exists
       become: true
 
     - name: Clone itrust Git Repository
       shell: |
-        cd ~/Project
+        cd {{ itrust_dir }}
         git clone http://github.com/sseelam2/iTrust2-v4.git
       become: true
 
     - name: adding pre-push git hook
       template:
-        src: "~/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/pre-push"
-        dest: "~/Project/iTrust2-v4/.git/hooks/pre-push"
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/pre-push"
+        dest: "{{ itrust_dir }}/iTrust2-v4/.git/hooks/pre-push"
         mode: 0767
 
     - name: Add Fuzzer.js file to the git Repo
       copy:
-        src: "~/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/fuzzer.js"
-        dest: "~/Project/iTrust2-v4/fuzzer.js"
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/fuzzer.js"
+        dest: "{{ itrust_dir }}/iTrust2-v4/fuzzer.js"
         mode: 0666
 
     - name: Add package.json file to the git Repo
       copy:
-        src: "~/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/package.json"
-        dest: "~/Project/iTrust2-v4/package.json"
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/package.json"
+        dest: "{{ itrust_dir }}/iTrust2-v4/package.json"
         mode: 0666
 
     - name: Git add and checkout master
