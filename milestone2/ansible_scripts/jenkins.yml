@@ -1,6 +1,7 @@
 - name: jenkins installation
   hosts: jenkins
-
+  become: yes
+  
   roles:
     - java_2
     - java

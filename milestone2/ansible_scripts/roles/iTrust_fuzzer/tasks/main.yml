@@ -9,13 +9,14 @@
         state: absent
         path: "{{ itrust_dir }}/iTrust2-v4"
       when: workspace.stat.exists
-      become: true
+      
 
+    
     - name: Clone itrust Git Repository
       shell: |
         cd {{ itrust_dir }}
-        git clone http://github.com/sseelam2/iTrust2-v4.git
-      become: true
+        git clone https://github.com/sseelam2/iTrust2-v4.git
+      
 
     - name: adding pre-push git hook
       template:
@@ -39,8 +40,10 @@
       shell: |
         cd ~/Project/iTrust2-v4
         sudo npm install 
-        git checkout master 
-        touch fuzzer.js 
-        git add . 
-        git commit -m \"Master commit after changes\" 
+        sudo npm install random-js
+        sudo git checkout master 
+        sudo touch test7
+        sudo git add . 
+        sudo git commit -m \"Master commit after changes\" 
         git push
+

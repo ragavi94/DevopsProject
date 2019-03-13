@@ -50,15 +50,14 @@ var getFiles= function (dir, done) {
         
     });
     return files;
+
 };
+var random = function () {
+    return new Random(Random.engines.mt19937().autoSeed())
+}
 var fuzzer = 
 {
-    random : new Random(Random.engines.mt19937().seed(0)),
-    
-    seed: function (kernel)
-    {
-        fuzzer.random = new Random(Random.engines.mt19937().seed(kernel));
-    },
+
 
     mutate:
     {
@@ -69,20 +68,20 @@ var fuzzer =
             fs.writeFileSync(val, '', {encoding:'utf8'});
             lines.forEach(function(line)
             {
-                if( fuzzer.random.bool(0.05) )
+                if( random().bool(0.05) )
                 {
                     line = line.replace('locked', 'closed');
                 }
-                if( fuzzer.random.bool(0.05) )
+                if( random().bool(0.05) )
                 {
                     line = line.replace('<', '>');
                 }
             
-                if( fuzzer.random.bool(0.25) )
+                if( random().bool(0.25) )
                 {
                     line = line.replace('==', '!=')
                 }
-                if( fuzzer.random.bool(0.25) )
+                if( random().bool(0.25) )
                 {
                     line = line.replace('0', '1')
                 }

@@ -54,6 +54,7 @@
       state: present
       update_cache: yes
       force: yes
+    ignore_errors: yes
 
   - name: npm install 
     shell: 
@@ -184,7 +185,8 @@
         'Enter same passphrase again:': ''
     args:
       creates: /home/vagrant/.ssh/id_rsa 
-   
+    ignore_errors: yes
+    
   - name: Install expect
     apt:
       name: expect
