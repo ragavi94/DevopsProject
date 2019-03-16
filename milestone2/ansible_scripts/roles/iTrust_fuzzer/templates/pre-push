@@ -9,3 +9,4 @@ if [ $BRANCHNAME = 'master' ]; then
     echo "CURRENT CHECKED OUT BRANCH IS: master"
     node fuzzer.js
 fi
+

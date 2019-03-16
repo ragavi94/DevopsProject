@@ -213,11 +213,11 @@
   - name: Copy jenkins_jobs.ini file to jenkins server
     template:
       src: "~/DevopsProject/milestone2/ansible_scripts/roles/jenkins/templates/jobs.ini"
-      dest: ~/jenkins_jobs.ini
+      dest: /home/vagrant/jenkins_jobs.ini
 
   - name: create jobs folder to create jobs if it doesn't exit
     file:
-      path: ~/jobs
+      path: /home/vagrant/jobs
       state: directory
 
   - name: Change StrictHostKeyChecking to no
