@@ -1,4 +1,3 @@
-
   - name: install maven (and other packages if needed)
     become: yes
     apt: pkg={{ item }} state=latest update_cache=yes cache_valid_time=3600
@@ -17,7 +16,7 @@
      repo: deb https://pkg.jenkins.io/debian-stable binary/
      state: present
     become: true
-    
+
   - name: install jenkins
     apt:
      name: jenkins
@@ -42,7 +41,7 @@
     wait_for: 
       port: 8080
       delay: 30
-      
+
   - name: install nodejs
     shell: curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
     become: yes
@@ -54,7 +53,6 @@
       state: present
       update_cache: yes
       force: yes
-    ignore_errors: yes
 
   - name: npm install 
     shell: 
@@ -66,13 +64,13 @@
 
   - name: install mocha
     shell: sudo npm install mocha -g 
-    
+
   - name: install git
     apt:
      name: git
      state: present
     become: true  
-  
+
   - name: read admin pwd
     shell: sudo cat /var/lib/jenkins/secrets/initialAdminPassword
     register: adminpwd
@@ -148,7 +146,7 @@
     wait_for: 
       port: 8080
       delay: 5
-    
+
   - name: Install pip2
     apt:
       name: python-pip
@@ -175,7 +173,7 @@
     pip:
       name: pexpect
     become: true
-  
+
   - name: Generate SSH key for git
     expect:
       command: ssh-keygen -t rsa -b 4096 -C "sseelam2@ncsu.edu"
@@ -185,8 +183,7 @@
         'Enter same passphrase again:': ''
     args:
       creates: /home/vagrant/.ssh/id_rsa 
-    ignore_errors: yes
-    
+
   - name: Install expect
     apt:
       name: expect
@@ -203,7 +200,7 @@
     args:
       executable: /usr/bin/expect
     become: true
-      
+
   - name: Add config file for ssh for github ncsu host
     copy:
       src: "~/DevopsProject/milestone2/ansible_scripts/roles/jenkins/templates/config"
@@ -213,11 +210,11 @@
   - name: Copy jenkins_jobs.ini file to jenkins server
     template:
       src: "~/DevopsProject/milestone2/ansible_scripts/roles/jenkins/templates/jobs.ini"
-      dest: /home/vagrant/jenkins_jobs.ini
+      dest: ~/jenkins_jobs.ini
 
   - name: create jobs folder to create jobs if it doesn't exit
     file:
-      path: /home/vagrant/jobs
+      path: ~/jobs
       state: directory
 
   - name: Change StrictHostKeyChecking to no
@@ -226,4 +223,3 @@
       regexp: '#   StrictHostKeyChecking ask'
       line: '   StrictHostKeyChecking no'
     become: true
-  
