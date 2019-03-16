@@ -42,20 +42,12 @@
         sudo npm install 
         sudo npm install random-js
         sudo git checkout master 
-<<<<<<< HEAD
-        sudo touch testfile2
-        sudo git add testfile2
-        sudo git commit -m \"Master commit after changes\" 
+        sudo touch testfile5
+        sudo git add testfile5
+        sudo git commit -m \"commit after changes\" 
         git push
       register: output_var
 
     - name: debug messages
       debug:
         msg: "{{ output_var }}"
-=======
-        sudo touch test7
-        sudo git add . 
-        sudo git commit -m \"Master commit after changes\" 
-        git push
-
->>>>>>> 3b312feb48111079cb60f99276879e576f0eb325

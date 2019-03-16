@@ -43,7 +43,6 @@ const fileFuzzer = (filePath) => {
                 else if(line.match('>') && !line.match('->')){
                   line=line.replace('>', '<');
                 }
-<<<<<<< HEAD
     
               }
             }
@@ -92,51 +91,6 @@ const fileFuzzer = (filePath) => {
             else{
                 if(line.match('false')){
                   line=line.replace('false', 'true');
-=======
-            });
-
-            
-            
-        });
-        
-        
-    });
-    return files;
-
-};
-var random = function () {
-    return new Random(Random.engines.mt19937().autoSeed())
-}
-var fuzzer = 
-{
-
-
-    mutate:
-    {
-        string: function(val)
-        {
-            // MUTATE IMPLEMENTATION HERE
-            let lines = fs.readFileSync(val, 'utf8').split(/\r?\n/)
-            fs.writeFileSync(val, '', {encoding:'utf8'});
-            lines.forEach(function(line)
-            {
-                if( random().bool(0.05) )
-                {
-                    line = line.replace('locked', 'closed');
-                }
-                if( random().bool(0.05) )
-                {
-                    line = line.replace('<', '>');
-                }
-            
-                if( random().bool(0.25) )
-                {
-                    line = line.replace('==', '!=')
-                }
-                if( random().bool(0.25) )
-                {
-                    line = line.replace('0', '1')
->>>>>>> 3b312feb48111079cb60f99276879e576f0eb325
                 }
             }
 
@@ -175,6 +129,8 @@ const runFuzzingProcess = (n) => {
     for (var i = 0; i < n; i++) {
         let javaPaths = getJavaFilePaths('iTrust2/src/main/java/edu/ncsu/csc/itrust2');
         child_process.execSync(`git checkout -f ${sha1}`);
+        child_process.execSync(`git checkout fuzzer && git revert ${sha1}  -n -X theirs`)
+        child_process.execSync(`git checkout fuzzer && git revert fuzzer~${n-1}  -n -X theirs && git commit -m "revert"`)
         javaPaths.forEach(javaPath =>{
             let rnd = Math.random();
             if(rnd > 0.25)

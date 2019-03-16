@@ -4,26 +4,6 @@
     email_password: "smsmmsme"
     mysql_password: "root"
   tasks:
-
-    - name: check if itrust workspace folder exists
-      stat:
-        path: "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4"
-      register: workspace_dir
-
-    - name: delete if the itrust directory exists
-      file:
-        state: absent
-        path: "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4"
-      when: workspace_dir.stat.exists
-      become: true
-
-    - name: Clone itrust Git Repository
-      shell: |
-        cd /var/lib/jenkins/workspace/{{itrust_name}}/
-        git clone http://github.com/sseelam2/iTrust2-v4.git
-      become: true
-
-
     - name: Copy DB Properties
       copy:
         src: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties.template
