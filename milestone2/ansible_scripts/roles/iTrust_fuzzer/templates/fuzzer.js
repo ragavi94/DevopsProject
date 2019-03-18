@@ -139,7 +139,7 @@ const runFuzzingProcess = (n) => {
                 fuzzerOps(javaPath);
         })
         let lastSha1 = commit(master_sha1, i);
-
+        triggerbuild(JENKINS_URL, jenkinsToken, githubURL, lastSha1)
 
     }
 }
