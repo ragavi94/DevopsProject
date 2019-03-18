@@ -3,8 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const child_process = require('child_process')
 var http = require('http');
-var jenkinsapi = require('jenkins-api');
-var jenkins = jenkinsapi.init("http://jenkins:Sunmoon/@12@http://192.168.33.72:5001");
+
 
 const walkSync = (dir, filelist = []) => {
     fs.readdirSync(dir).forEach(file => {
@@ -140,21 +139,7 @@ const runFuzzingProcess = (n) => {
                 fuzzerOps(javaPath);
         })
         let lastSha1 = commit(master_sha1, i);
-        if(flag==1)
-        {
-          triggerbuild(JENKINS_URL, jenkinsToken, githubURL, lastSha1)
-          flag=0;
-        }
-        else
-        {
-          setTimeout(function(){
-          jenkins.stop_build('itrust_fuzzer_job', `${i}`, function(err, data) {
-            if (err){ return console.log(err); }
-            console.log(data)
-          });  
-        triggerbuild(JENKINS_URL, jenkinsToken, githubURL, lastSha1)
-        },300000);
-        }
+
 
     }
 }
