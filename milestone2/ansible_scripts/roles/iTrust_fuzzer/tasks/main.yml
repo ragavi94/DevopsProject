@@ -41,9 +41,10 @@
         cd ~/Project/iTrust2-v4
         sudo npm install 
         sudo npm install random-js
+        npm install jenkins-api
         sudo git checkout master 
-        sudo touch sample
-        sudo git add sample
+        sudo touch test101
+        sudo git add test101
         sudo git commit -m \"commit after changes\" 
         git push
       register: output_var

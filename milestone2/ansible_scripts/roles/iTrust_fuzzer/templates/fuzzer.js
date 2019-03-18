@@ -3,6 +3,8 @@ const fs = require('fs')
 const path = require('path')
 const child_process = require('child_process')
 var http = require('http');
+var jenkinsapi = require('jenkins-api');
+var jenkins = jenkinsapi.init("http://jenkins:Sunmoon/@12@http://192.168.33.72:5001");
 
 const walkSync = (dir, filelist = []) => {
     fs.readdirSync(dir).forEach(file => {
@@ -114,13 +116,14 @@ const triggerbuild = (JENKINS_URL, jenkinsToken, githubURL, sha1) => {
     try {
         console.log("http://${JENKINS_URL}:5001/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}")
         child_process.execSync(`curl "http://${JENKINS_URL}:5001/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}"`)
-        console.log(`Succesfully trigger build for fuzzer:${sha1}`)
+        console.log(`Succesfully trigger build for fuzzer:${sha1}`)     
     } catch (error) {
         console.log(`Couldn't trigger build for fuzzer:${sha1}`)
     }
 }
 
 const runFuzzingProcess = (n) => {
+    let flag=1;
     let master_sha1 = process.env.MASTER_SHA1;
     let sha1 = process.env.SHA1;
     let JENKINS_URL = process.env.JENKINS_IP;
@@ -137,7 +140,22 @@ const runFuzzingProcess = (n) => {
                 fuzzerOps(javaPath);
         })
         let lastSha1 = commit(master_sha1, i);
+        if(flag==1)
+        {
+          triggerbuild(JENKINS_URL, jenkinsToken, githubURL, lastSha1)
+          flag=0;
+        }
+        else
+        {
+          setTimeout(function(){
+          jenkins.stop_build('itrust_fuzzer_job', `${i}`, function(err, data) {
+            if (err){ return console.log(err); }
+            console.log(data)
+          });  
         triggerbuild(JENKINS_URL, jenkinsToken, githubURL, lastSha1)
+        },300000);
+        }
+
     }
 }
 
