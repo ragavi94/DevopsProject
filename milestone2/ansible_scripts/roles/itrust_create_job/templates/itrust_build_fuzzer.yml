@@ -17,6 +17,17 @@
         dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2/src/main/java/email.properties
       become: true
 
+    - name: Change db properties to set custom db username and password
+      lineinfile:
+        dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2/src/main/java/db.properties
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      with_items:
+        - { regexp: '^username root', line: 'username mysql-server' }
+        - { regexp: '^password', line: 'password {{ mysql_password }}' }
+      become: true
+      register: value
+
     - name: Change email properties to set custom email username and password
       lineinfile:
         dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2/src/main/java/email.properties
@@ -34,3 +45,16 @@
       args:
         chdir: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2
       become: true
+
+    - name: building mvn
+      command: mvn -f pom-data.xml process-test-classes
+      args:
+        chdir: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2
+      become: true
+
+    - name: test suite run
+      command: mvn clean test verify checkstyle:checkstyle
+      args:
+        chdir: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2
+      become: true
+      ignore_errors: true

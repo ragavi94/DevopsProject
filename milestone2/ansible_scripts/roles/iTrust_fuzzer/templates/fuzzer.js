@@ -13,7 +13,7 @@ const walkSync = (dir, filelist = []) => {
     return filelist;
 }
 
-const getJavaFilePaths = (dirPath)=>{
+const getAllFilePaths = (dirPath)=>{
     let filePaths = walkSync(dirPath)
     let javaPaths = []
 
@@ -25,14 +25,14 @@ const getJavaFilePaths = (dirPath)=>{
     return javaPaths;
 }
 
-const fileFuzzer = (filePath) => {
+const fuzzerOps = (filePath) => {
     let lines = fs.readFileSync(filePath, 'utf8').split(/\r?\n/)
     fs.writeFileSync(filePath, '', {encoding:'utf8'});
 
     var prob=0;
         lines.forEach(function(line){
             prob=Math.random();
-            if(prob>0.4)
+            if(prob>0.3)
             {
               if(line.match('while') || line.match('for') || line.match('if'))
               {
@@ -47,7 +47,7 @@ const fileFuzzer = (filePath) => {
               }
             }
             prob=Math.random();
-            if(prob>0.4){
+            if(prob>0.3){
               if(line.match('=='))
                 line=line.replace(/==/g,'!=');
               else if(line.match('!='))
@@ -55,7 +55,7 @@ const fileFuzzer = (filePath) => {
               
             }
             prob=Math.random();
-            if(prob>0.4)
+            if(prob>0.5)
             {
               if((line.match('while') || line.match('for') || line.match('if')) && line.match(/[0]/))
               {
@@ -68,7 +68,7 @@ const fileFuzzer = (filePath) => {
 
             }
             prob=Math.random();
-            if(prob>0.4)
+            if(prob>0.3)
             {
               if(line.match('for'))
               {
@@ -82,7 +82,7 @@ const fileFuzzer = (filePath) => {
             }
 
             prob=Math.random();
-            if(prob>0.4)
+            if(prob>0.5)
             {
                 if(line.match('true')){
                   line=line.replace('true', 'false');
@@ -102,7 +102,7 @@ const fileFuzzer = (filePath) => {
         });
 }
 
-const commitFuzzer = (master_sha1, n) => {
+const commit = (master_sha1, n) => {
     
     child_process.execSync(`git stash && git checkout fuzzer && git checkout stash -- . && git commit -am "Fuzzing :${master_sha1}: # ${n+1}" && git push`)
     child_process.execSync('git stash drop');
@@ -110,7 +110,7 @@ const commitFuzzer = (master_sha1, n) => {
     return lastSha1;
 }
 
-const triggerJenkinsBuild = (JENKINS_URL, jenkinsToken, githubURL, sha1) => {
+const triggerbuild = (JENKINS_URL, jenkinsToken, githubURL, sha1) => {
     try {
         console.log("http://${JENKINS_URL}:5001/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}")
         child_process.execSync(`curl "http://${JENKINS_URL}:5001/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}"`)
@@ -123,21 +123,21 @@ const triggerJenkinsBuild = (JENKINS_URL, jenkinsToken, githubURL, sha1) => {
 const runFuzzingProcess = (n) => {
     let master_sha1 = process.env.MASTER_SHA1;
     let sha1 = process.env.SHA1;
-    let jenkinsIP = process.env.JENKINS_IP;
+    let JENKINS_URL = process.env.JENKINS_IP;
     let jenkinsToken = process.env.JENKINS_BUILD_TOKEN;
     let githubURL = process.env.GITHUB_URL;
     for (var i = 0; i < n; i++) {
-        let javaPaths = getJavaFilePaths('iTrust2/src/main/java/edu/ncsu/csc/itrust2');
+        let javaPaths = getAllFilePaths('iTrust2/src/main/java/edu/ncsu/csc/itrust2');
         child_process.execSync(`git checkout -f ${sha1}`);
         child_process.execSync(`git checkout fuzzer && git revert ${sha1}  -n -X theirs`)
         child_process.execSync(`git checkout fuzzer && git revert fuzzer~${n-1}  -n -X theirs && git commit -m "revert"`)
         javaPaths.forEach(javaPath =>{
             let rnd = Math.random();
-            if(rnd > 0.25)
-                fileFuzzer(javaPath);
+            if(rnd > 0.30)
+                fuzzerOps(javaPath);
         })
-        let lastSha1 = commitFuzzer(master_sha1, i);
-        triggerJenkinsBuild(jenkinsIP, jenkinsToken, githubURL, lastSha1)
+        let lastSha1 = commit(master_sha1, i);
+        triggerbuild(JENKINS_URL, jenkinsToken, githubURL, lastSha1)
     }
 }
 

@@ -42,8 +42,8 @@
         sudo npm install 
         sudo npm install random-js
         sudo git checkout master 
-        sudo touch testfile5
-        sudo git add testfile5
+        sudo touch sample
+        sudo git add sample
         sudo git commit -m \"commit after changes\" 
         git push
       register: output_var
