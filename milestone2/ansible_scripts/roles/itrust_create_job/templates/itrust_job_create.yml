@@ -16,4 +16,10 @@
             source-pattern: '**/src'
             update-build-status: true
             exclusion-pattern: '**/*Test*.class'
+        - checkstyle:
+            pattern: '**/checkstyle-result.xml'
+            can-run-on-failed: true
+            should-detect-modules: false
+            health-threshold: 'high'
+
         
