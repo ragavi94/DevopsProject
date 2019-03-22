@@ -58,6 +58,7 @@ As mentioned, the build job seemed to get stuck midway when the itrust test suit
 
 add 
 1. change /home/harish in vars
+2. ram size of vm in baker.yml
 
 
 
