@@ -38,7 +38,11 @@
                     today=`date +%Y-%m-%d.%H:%M:%S`
                     sudo cp -R /var/lib/jenkins/workspace/{{itrust_fuzzer_name}}/iTrust2/target/surefire-reports /home/vagrant/fuzzer_test_reports/$today/
                     sudo rm -rf /var/lib/jenkins/workspace/{{itrust_fuzzer_name}}/
-
+                    touch /home/vagrant/report.txt && rm /home/vagrant/report.txt
+                    cd /home/vagrant
+                    sudo npm install
+                    sudo node priority.js
+                    
 
                     
 

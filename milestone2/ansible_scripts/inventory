@@ -5,6 +5,9 @@ ansible_python_interpreter=/usr/bin/python3
 [itrust:vars]
 ansible_python_interpreter=/usr/bin/python3
 
+[main]
+localhost ansible_connection=local
+
 [jenkins]
 192.168.33.72 ansible_ssh_user=vagrant ansible_ssh_private_key_file=~/.ssh/id_rsa
 

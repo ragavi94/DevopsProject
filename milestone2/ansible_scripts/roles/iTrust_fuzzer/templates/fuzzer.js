@@ -14,17 +14,6 @@ const walkSync = (dir, filelist = []) => {
     return filelist;
 }
 
-const getAllFilePaths = (dirPath)=>{
-    let filePaths = walkSync(dirPath)
-    let javaPaths = []
-
-    filePaths.forEach(file => {
-        if (!file.match(/models/) && !file.match(/sql/) && path.basename(file).match(/[a-zA-Z0-9._/]+[.]java$/g)) {
-            javaPaths.push(file)
-        }
-    })
-    return javaPaths;
-}
 
 const fuzzerOps = (filePath) => {
     let lines = fs.readFileSync(filePath, 'utf8').split(/\r?\n/)
@@ -103,6 +92,27 @@ const fuzzerOps = (filePath) => {
         });
 }
 
+const filepaths = (dirPath)=>{
+    let filePaths = walkSync(dirPath)
+    let javaPaths = []
+
+    filePaths.forEach(file => {
+        if (!file.match(/models/) && !file.match(/sql/) && path.basename(file).match(/[a-zA-Z0-9._/]+[.]java$/g)) {
+            javaPaths.push(file)
+        }
+    })
+    return javaPaths;
+}
+
+const trigger = (JENKINS_URL, githubURL, jenkinsToken, sha1) => {
+    try {
+        child_process.execSync(`curl "http://${JENKINS_URL}:5001/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}"`)
+        console.log(`build for fuzzer branch triggered:${sha1}`)     
+    } catch (error) {
+        console.log(`error in build:${sha1}`)
+    }
+}
+
 const commit = (master_sha1, n) => {
     
     child_process.execSync(`git stash && git checkout fuzzer && git checkout stash -- . && git commit -am "Fuzzing :${master_sha1}: # ${n+1}" && git push`)
@@ -111,15 +121,6 @@ const commit = (master_sha1, n) => {
     return lastSha1;
 }
 
-const triggerbuild = (JENKINS_URL, jenkinsToken, githubURL, sha1) => {
-    try {
-        console.log("http://${JENKINS_URL}:5001/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}")
-        child_process.execSync(`curl "http://${JENKINS_URL}:5001/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}"`)
-        console.log(`Succesfully trigger build for fuzzer:${sha1}`)     
-    } catch (error) {
-        console.log(`Couldn't trigger build for fuzzer:${sha1}`)
-    }
-}
 
 const runFuzzingProcess = (n) => {
     let flag=1;
@@ -129,19 +130,17 @@ const runFuzzingProcess = (n) => {
     let jenkinsToken = process.env.JENKINS_BUILD_TOKEN;
     let githubURL = process.env.GITHUB_URL;
     for (var i = 0; i < n; i++) {
-        let javaPaths = getAllFilePaths('iTrust2/src/main/java/edu/ncsu/csc/itrust2');
+        let javaPaths = filepaths('iTrust2/src/main/java/edu/ncsu/csc/itrust2');
         child_process.execSync(`git checkout -f ${sha1}`);
-        child_process.execSync(`git checkout fuzzer && git revert ${sha1}  -n -X theirs`)
-        child_process.execSync(`git checkout fuzzer && git revert fuzzer~${n-1}  -n -X theirs && git commit -m "revert"`)
         javaPaths.forEach(javaPath =>{
             let rnd = Math.random();
             if(rnd > 0.30)
                 fuzzerOps(javaPath);
         })
         let lastSha1 = commit(master_sha1, i);
-        triggerbuild(JENKINS_URL, jenkinsToken, githubURL, lastSha1)
+        trigger(JENKINS_URL, githubURL , jenkinsToken, lastSha1)
 
     }
 }
 
-runFuzzingProcess(2);
+runFuzzingProcess(3);

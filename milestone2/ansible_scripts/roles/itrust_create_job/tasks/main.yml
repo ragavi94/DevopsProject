@@ -23,6 +23,29 @@
     mode: 0666
   become: true
 
+- name: Copy iTrust prioritize node js
+  copy:
+    src: "~/DevopsProject/milestone2/ansible_scripts/roles/itrust_create_job/templates/priority.js"
+    dest: /home/vagrant/priority.js
+    owner: jenkins
+    group: jenkins
+    mode: 0777
+  become: true
+
+- name: Copy iTrust prioritize package.json
+  copy:
+    src: "~/DevopsProject/milestone2/ansible_scripts/roles/itrust_create_job/templates/package.json"
+    dest: /home/vagrant/package.json
+    owner: jenkins
+    group: jenkins
+    mode: 0777
+  become: true
+
+- name: del previously existing prioritizatin report
+  file:
+    path: /home/vagrant/report.txt
+    state: absent
+
 - name: copy inventory file used for ansible playbooks
   copy:
     src: "~/DevopsProject/milestone2/ansible_scripts/roles/itrust_create_job/templates/local_inventory"
@@ -42,6 +65,7 @@
   template:
       src: ~/DevopsProject/milestone2/ansible_scripts/roles/itrust_create_job/templates/itrust_fuzzer_script.yml
       dest: /home/vagrant/jobs/itrust_fuzzer_script.yml
+
 
 - name: copy jenkins_jobs to iTrust_jobs
   shell: cp ~/jenkins_jobs.ini ~/itrust_jobs.ini

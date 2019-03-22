@@ -1,0 +1,37 @@
+- hosts: localhost
+  tasks:
+    - name: Copy package.json
+      copy:
+        src: /var/lib/jenkins/package.json
+        dest: /home/vagrant/package.json
+        owner: vagrant
+        group: vagrant
+        mode: 0777
+      become: true
+
+    - name: Copy priority.js
+      copy:
+        src: /var/lib/jenkins/priority.js
+        dest: /home/vagrant/priority.js
+        owner: vagrant
+        group: vagrant
+        mode: 0777
+      become: true
+
+    - name: del previously existing prioritizatin report
+      file:
+        path: /home/vagrant/report.txt
+        state: absent
+
+    - name: npm install and running the node prioritization file
+      shell: |
+        sudo npm install 
+        node priority.js
+      become: true
+
+    - name: 
+      shell:
+        sleep 10 
+        cat /home/vagrant/report.txt
+      become: true
+      

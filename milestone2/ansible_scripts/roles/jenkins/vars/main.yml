@@ -1,7 +1,0 @@
----
-  admin_user_pass: "Sunmoon@12"
-  passphrase: "GitPassPhrase"
-  jenkins_user_name: "jenkins"
-  jenkins_url: "http://localhost:8080"
-  
-...
