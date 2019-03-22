@@ -26,6 +26,11 @@ iTrust
 
 Checkbox
 
+Calculated the custom source metrics of the source code by calculating the maximum number of conditions within an if statement, counting the number of lines within a method and comparing it with a set threshold value to detect if it is a long method, amd counted the number of import statements in the source code. When these values exceed the threshold value, the build fails. The build can be made a success by setting the following threshold values:
+MAX_LINE_COUNT=250
+MAX_CONDITION=20
+MAX_IMPORT=10
+
 
 Contribution:
 
@@ -117,8 +122,7 @@ https://drive.google.com/file/d/1P11qojmGdPpp2D-x3TEhIyrypgrDm_dI/view?usp=shari
 
 Analysis - Checkbox
 
-
-
+https://drive.google.com/file/d/1_Nrr_XK64P542ca0hPM5sGGyl7FsoiZd/view?usp=sharing
 
 
 
