@@ -34,6 +34,7 @@ MAX_LINE_COUNT=250
 MAX_CONDITION=20
 MAX_IMPORT=10
 
+These custom source metrics calculation would help the software developers to determine the methods in which he can limit the lines of code or reduce the conditions used within the If statement, thereby achieving more efficiency.
 
 Contribution:
 
