@@ -2,7 +2,7 @@ DevopsProject
 
 Milestone 2: Test + Analysis
 
-Team 1
+Team 1:
 
 ITrust Git Repo:  https://github.com/sseelam2/iTrust2-v4.git
 
@@ -20,16 +20,14 @@ changing the values in the src files/ mutation etc and finally does a commit to 
 All reports generated using each build is stored in the jenkins server at the /home/vagrant folder and organized based on job run date and time. A node js file that parses these
 reports and does prioritization based on time to execute and number of failed tests has been written. 
 
-4. Analysis : (To be written)
+4. Analysis : 
 
-iTrust
+iTrust:  (To be written)
 
-Checkbox
+Checkbox:
 
-Calculated the custom source metrics of the source code by calculating the maximum number of conditions within an if statement, 
-counting the number of lines within a method and compared it with a set threshold value to detect if it is a long method, and 
-counted the number of import statements in the source code. When these values exceed the threshold value, the build fails. The 
-build can be made a success by setting the following threshold values:
+Calculated the custom source metrics of the source code by calculating the maximum number of conditions within an if statement, counting the number of lines within a method and compared it with a set threshold value to detect if it is a long method, and counted the number of import statements in the source code. When these values exceed the threshold value, the build fails. The build can be made a success by setting the following threshold values:
+
 MAX_LINE_COUNT=250
 MAX_CONDITION=20
 MAX_IMPORT=10
@@ -59,42 +57,37 @@ https://github.ncsu.edu/sseelam2/DevopsProject.git
 
 4. Add your id_rsa.pub ssh key into the jenkins server. 
 
-You should now be able to run the ansible playbooks. You might want to stop the jenkins server vm, increase the RAM size and run it again if the build 
-seems to get stuck.We noticed it was mostly due to memory issues.
+You should now be able to run the ansible playbooks. You might want to stop the jenkins server vm, increase the RAM size and run it again if the build seems to get stuck.We noticed it was mostly due to memory issues.
 
 Run Ansible Playbooks:
 
-We ve consolidated all variables across diffrent roles into a single vars file in the root directory. All secrets have been
-encrypted using Ansible Vault.
+We ve consolidated all variables across diffrent roles into a single vars file in the root directory. All secrets have been encrypted using Ansible Vault.
 
-To Run the Jenkins Setup:
+– To Run the Jenkins Setup:
 
 ansible-playbook jenkins.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone2/ansible_scripts/vars/main.yml
 
-To Run the Checkbox Setup and Static Analysis: (Builds to be seen at 192.168.33.72:8080)
+– To Run the Checkbox Setup and Static Analysis: (Builds to be seen at 192.168.33.72:8080)
 
 ansible-playbook checkbox.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone2/ansible_scripts/vars/main.yml
 
-To Run the Checkbox Setup and Analysis: (Builds to be seen at 192.168.33.72:5001)
+– To Run the Checkbox Setup and Analysis: (Builds to be seen at 192.168.33.72:5001)
 
 
 ansible-playbook itrust.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone2/ansible_scripts/vars/main.yml
 
 
-To Run the ITrust Job to call pre-push trigget, run fuzzer, make random changes based on fuzzer file and commit them to remote 
-ITrust Fuzzer Branch, follwed by Test Suite runs, Jacoco Coverage and Test Prioritization on the reports.
+– To Run the ITrust Job to call pre-push trigget, run fuzzer, make random changes based on fuzzer file and commit them to remote Itrust Fuzzer Branch, follwed by Test Suite runs, Jacoco Coverage and Test Prioritization on the reports.
 
 sudo ansible-playbook fuzzer_tests.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone2/ansible_scripts/vars/main.yml
 
 See reports at /home/vagrant/report.txt on the jenkins server (192.168.33.72)
 
-To run a static analysis on ITrust source code using the checkstyle plugin, report warnings and errors. Make changes on pom.xml 
-to change attributes like "failsOnViolation"/"failsOnError" and see the build failure.
+– To run a static analysis on ITrust source code using the checkstyle plugin, report warnings and errors. Make changes on pom.xml to change attributes like "failsOnViolation"/"failsOnError" and see the build failure.
 
 ansible-playbook itrust_build_coverage.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone2/ansible_scripts/vars/main.yml
 
-See all checkstyle reports at /var/lib/jenkins/workspace/itrust_job/iTrust2-v4/iTrust2/target/checkstyle-result.xml in the 
-jenkins server (192.168.33.72)
+See all checkstyle reports at /var/lib/jenkins/workspace/itrust_job/iTrust2-v4/iTrust2/target/checkstyle-result.xml in the jenkins server (192.168.33.72)
 
 
 Challenges faced: 
@@ -124,7 +117,7 @@ Analysis - ITrust using Checkstyle:
 
 https://drive.google.com/file/d/1P11qojmGdPpp2D-x3TEhIyrypgrDm_dI/view?usp=sharing
 
-Analysis - Checkbox
+Analysis – Checkbox: 
 
 https://drive.google.com/file/d/1_Nrr_XK64P542ca0hPM5sGGyl7FsoiZd/view?usp=sharing
 
@@ -132,4 +125,3 @@ https://drive.google.com/file/d/1_Nrr_XK64P542ca0hPM5sGGyl7FsoiZd/view?usp=shari
 
 
  
-
