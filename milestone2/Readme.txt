@@ -22,7 +22,14 @@ reports and does prioritization based on time to execute and number of failed te
 
 4. Analysis : 
 
-iTrust:  (To be written)
+iTrust:  
+
+In order to do static analysis on the source code, we installed Checkstyle plugin in jenkins. This plugin was also included as a part of pom.xml file, where we can specify the various parameters of the plugin about the behaviour of the build upon any violation/errors. In order to fail the build, the parameters "failsOnError" and "failOnViolation" should be set to "True". Without any configuration file, the source code is checked against "csc_checkstyle.xml" (since this is the config file mentioned in the properties section). In order to get the 
+report of Checkstyle, a report section has to be included in the pom.xml. 
+
+In the iTrust_create_job.yml, under publishers section, we have defined the actions for checkstyle report generation. The report will get generated even if the build gets failed. The report can be viewed at ~/workspace/target/checkstyle_report.xml. 
+
+We also added few other metrics like "Nested If Depth", "Simple Cyclomatic Complexity", "Methoud Count" to be tested against the source code. These modules were added as part of csc_checkstyle.xml and we also set some threshold values and severity level for these modules. In either case(build success or build fail), the report can be viewed at the above mentioned location. 
 
 Checkbox:
 
