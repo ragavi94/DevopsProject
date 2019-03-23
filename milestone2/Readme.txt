@@ -64,6 +64,14 @@ https://github.ncsu.edu/sseelam2/DevopsProject.git
 
 4. Add your id_rsa.pub ssh key into the jenkins server. 
 
+5. Go to ~/DevopsProject/milestone2/ansible_scripts/vars/main.yml and change the following paths to your home directory.
+
+  itrust_dir : /home/harish/Project
+  devops_milestone_dir : /home/harish
+  
+6. The default size of the Jenkins Server VM in the baker.yml file is 8GB. To change it, go to 
+   ~/DevopsProject/milestone2/servers/jenkins/baker.yml
+  
 You should now be able to run the ansible playbooks. You might want to stop the jenkins server vm, increase the RAM size and run it again if the build seems to get stuck.We noticed it was mostly due to memory issues.
 
 Run Ansible Playbooks:
@@ -78,7 +86,7 @@ ansible-playbook jenkins.yml -i inventory --ask-vault-pass -e @~/DevopsProject/m
 
 ansible-playbook checkbox.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone2/ansible_scripts/vars/main.yml
 
-– To Run the Checkbox Setup and Analysis: (Builds to be seen at 192.168.33.72:5001)
+– To Run the Itrust Setup and Analysis: (Builds to be seen at 192.168.33.72:5001)
 
 
 ansible-playbook itrust.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone2/ansible_scripts/vars/main.yml
@@ -99,12 +107,17 @@ See all checkstyle reports at /var/lib/jenkins/workspace/itrust_job/iTrust2-v4/i
 
 Challenges faced: 
 
-As mentioned, the build job seemed to get stuck midway when the itrust test suite ran. We discovered that it was due to memory issues as a vagrant vm gets issued only 
+1. The build job seemed to get stuck midway when the itrust test suite ran. We discovered that it was due to memory issues as a vagrant vm gets issued only 
 1 GB of RAM initially. We stopped the job, increased the RAM to 4 GB or greater and ran the playbook again and the problem got solved.
 
-add 
-1. change /home/harish in vars
-2. ram size of vm in baker.yml
+2. During the creation of fuzzer tests and automatic build trigger, we encountered issues while reverting back the recently
+changed version of the src code. Due to it our consequent builds kept failing or ran into infinite loops. We decided to revert the src code back based on the first hash value of commit of the fuzzer branch and the issue got solved.
+
+3.  
+
+
+
+
 
 
 
