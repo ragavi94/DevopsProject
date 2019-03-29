@@ -76,7 +76,7 @@ You should now be able to run the ansible playbooks. You might want to stop the 
 
 Run Ansible Playbooks:
 
-We ve consolidated all variables across diffrent roles into a single vars file in the root directory. All secrets have been encrypted using Ansible Vault.
+We ve consolidated all variables across diffrent roles into a single vars file in the root directory. All secrets have been encrypted using Ansible Vault. [ password : 12345 ]
 
 – To Run the Jenkins Setup:
 
