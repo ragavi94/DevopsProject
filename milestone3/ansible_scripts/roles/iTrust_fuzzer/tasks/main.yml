@@ -1,0 +1,76 @@
+---
+    - name: check if Project folder exists or create it
+      file:
+        path: "{{ itrust_dir }}"
+        state: directory
+        mode: 0775
+      
+
+    - name: check if itrust workspace folder exists
+      stat:
+        path: "{{ itrust_dir }}/iTrust2-v4"
+      register: workspace
+
+    - name: delete if the itrust directory exists
+      file:
+        state: absent
+        path: "{{ itrust_dir }}/iTrust2-v4"
+      when: workspace.stat.exists
+      
+
+    
+    - name: Clone itrust Git Repository
+      shell: |
+        cd {{ itrust_dir }}
+        git clone https://github.com/sseelam2/iTrust2-v4.git
+      
+
+    - name: adding pre-push git hook
+      template:
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/pre-push"
+        dest: "{{ itrust_dir }}/iTrust2-v4/.git/hooks/pre-push"
+        mode: 0767
+
+    - name: Add Fuzzer.js file to the git Repo
+      copy:
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/fuzzer.js"
+        dest: "{{ itrust_dir }}/iTrust2-v4/fuzzer.js"
+        mode: 0666
+
+    - name: Add package.json file to the git Repo
+      copy:
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/package.json"
+        dest: "{{ itrust_dir }}/iTrust2-v4/package.json"
+        mode: 0666
+    
+    - name: install pexpect
+      pip:
+        name: pexpect
+      become: true
+
+    - name: Git add and checkout master
+      shell: |
+        cd ~/Project/iTrust2-v4
+        sudo npm install 
+        sudo npm install random-js
+        npm install jenkins-api
+        sudo git checkout master 
+        sudo touch testabfile2
+        sudo git add testabfile2
+        sudo git commit -m "commit after changes"
+        
+
+    - name: Git push
+      expect:
+        command: git push
+        responses:
+          "Username for 'https://github.com':": "{{ git_user }}"
+          "Password for 'https://sseelam2@github.com':": "{{ git_pass }}"
+        chdir: ~/Project/iTrust2-v4
+      register: output_var
+      become: true
+
+
+    - name: debug messages
+      debug:
+        msg: "{{ output_var }}"

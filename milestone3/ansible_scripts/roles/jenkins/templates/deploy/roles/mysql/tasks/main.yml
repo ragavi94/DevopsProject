@@ -1,0 +1,29 @@
+---
+- name: Adding MySQL root password using debconf
+  debconf: name='mysql-server' question='mysql-server/root_password' value='{{ mysql_password }}' vtype='password'
+  become: true
+
+- name: Adding MySQL root password using debconf - Confirm
+  debconf: name='mysql-server' question='mysql-server/root_password_again' value='{{ mysql_password }}' vtype='password'
+  become: true
+
+- name: install mysql server
+  apt: pkg={{item}} state=present
+  with_items:
+      - mysql-server
+  register: last_result
+  tags: mysql
+  become: true
+
+- name: Installing client and libs
+  apt: pkg={{item}} state=installed
+  with_items:
+      - mysql-client
+      - python-mysqldb
+  tags: mysql
+  become: true
+
+- name: Restart mysql service
+  service: name=mysql state=restarted
+  become: true
+...

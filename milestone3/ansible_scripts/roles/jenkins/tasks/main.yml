@@ -1,0 +1,230 @@
+  - name: install maven (and other packages if needed)
+    become: yes
+    apt: pkg={{ item }} state=latest update_cache=yes cache_valid_time=3600
+    with_items:
+      - maven
+    become: true
+
+  - name: add jenkins repo key
+    apt_key:
+     url: https://pkg.jenkins.io/debian/jenkins.io.key
+     state: present
+    become: true
+
+  - name: add jenkins repo list file into sources.list.d
+    apt_repository:
+     repo: deb https://pkg.jenkins.io/debian-stable binary/
+     state: present
+    become: true
+
+  - name: install jenkins
+    apt:
+     name: jenkins
+     state: present
+     update_cache: yes
+    become: true
+
+  - name: change Jenkins port
+    replace:
+      path: /etc/default/jenkins
+      regexp: "HTTP_PORT=5001"
+      replace: "HTTP_PORT=8080"
+    become: true
+
+  - name: Restarting Jenkins
+    service:
+      name: jenkins
+      state: restarted
+    become: true
+
+  - name: Wait for jenkins to restart
+    wait_for: 
+      port: 8080
+      delay: 30
+
+  - name: install nodejs
+    shell: curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+    become: yes
+
+  - name: install node latest package
+    become: yes
+    apt:
+      name: nodejs
+      state: present
+      update_cache: yes
+      force: yes
+
+  - name: npm install 
+    shell: 
+      sudo apt install npm -y
+    ignore_errors: yes
+
+  - name: install pm2
+    shell: sudo npm install pm2 -g
+
+  - name: install mocha
+    shell: sudo npm install mocha -g 
+
+  - name: install git
+    apt:
+     name: git
+     state: present
+    become: true  
+
+  - name: read admin pwd
+    shell: sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+    register: adminpwd
+    become: true
+
+  - name: unlock and add admin user
+    jenkins_script:
+     script: |
+      import jenkins.model.*
+      import hudson.security.*
+      def instance = Jenkins.getInstance()
+      def hudsonRealm = new HudsonPrivateSecurityRealm(false)
+      hudsonRealm.createAccount('jenkins', '${user_pwd}')
+      instance.setSecurityRealm(hudsonRealm)
+      def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+      strategy.setAllowAnonymousRead(false)
+      instance.setAuthorizationStrategy(strategy)
+      instance.save()
+     args:
+      user_pwd: "{{ admin_user_pass }}"
+     user: admin
+     password: "{{ adminpwd.stdout }}"
+
+  - name: complete setup wizard
+    jenkins_script:
+     script: |
+      import static jenkins.model.Jenkins.instance as jenkins
+      import jenkins.install.InstallState
+      if (!jenkins.installState.isSetupComplete()) {
+        InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+      }
+     user: admin
+     password: "{{ adminpwd.stdout }}"
+
+
+
+  - name: install ca certificate
+    apt:
+      name: ca-certificates
+      state: present
+
+  - name: install plugin
+    jenkins_plugin:
+      name: "{{ item }}"
+      url: "{{ jenkins_url }}"
+      url_username: "{{ jenkins_user_name }}"
+      url_password: "{{ admin_user_pass }}"
+      validate_certs: no
+      with_dependencies: yes
+    become: true
+    with_items:
+      - github
+      - jenkins-cli
+      - maven-plugin
+      - jenkins-job-builder
+      - build-timeout
+      - postbuildscript
+      - postbuild-task
+      - jacoco
+      - junit
+      - test-stability
+      - ws-cleanup
+      - html-xml-utils
+      - ansible
+
+  - name: restart jenkins
+    service:
+      name: jenkins
+      state: restarted
+    become: true
+
+  - name: Wait while re-starting Jenkins
+    wait_for: 
+      port: 8080
+      delay: 5
+
+  - name: Install pip2
+    apt:
+      name: python-pip
+      state: present
+    become: true
+
+  - name: installing jenkins job builder
+    pip:
+      name: jenkins-job-builder
+    become: true
+
+  - name: Restarting Jenkins
+    service:
+      name: jenkins
+      state: restarted
+    become: true
+
+  - name: Wait for jenkins to restart
+    wait_for: 
+      port: 8080
+      delay: 30
+
+  - name: install pexpect
+    pip:
+      name: pexpect
+    become: true
+
+  - name: Generate SSH key for git
+    expect:
+      command: ssh-keygen -t rsa -b 4096 -C "sseelam2@ncsu.edu"
+      responses:
+        'Enter file in which to save the key \(/home/vagrant/.ssh/id_rsa\):': ''
+        'Enter passphrase \(empty for no passphrase\):': ''
+        'Enter same passphrase again:': ''
+    args:
+      creates: /home/vagrant/.ssh/id_rsa 
+
+  - name: Install expect
+    apt:
+      name: expect
+      state: present
+    become: true
+
+  - name: Adding identity file
+    shell: |
+      sudo su 
+      cp /home/vagrant/.ssh/id_rsa /var/lib/jenkins/.ssh/id_rsa
+      cd /var/lib/jenkins/.ssh/id_rsa
+      eval "$(ssh-agent -s)" 
+      ssh-add -k /var/lib/jenkins/.ssh/id_rsa
+    args:
+      executable: /usr/bin/expect
+    become: true
+
+  - name: Add config file for ssh for github ncsu host
+    copy:
+      src: "~/DevopsProject/milestone2/ansible_scripts/roles/jenkins/templates/config"
+      dest: /root/.ssh/config
+    become: true
+
+  - name: Copy jenkins_jobs.ini file to jenkins server
+    template:
+      src: "~/DevopsProject/milestone2/ansible_scripts/roles/jenkins/templates/jobs.ini"
+      dest: ~/jenkins_jobs.ini
+
+  - name: Copy jenkins_jobs.ini file to jenkins server
+    template:
+      src: "~/DevopsProject/milestone2/ansible_scripts/roles/jenkins/templates/deploy"
+      dest: ~/deploy
+
+  - name: create jobs folder to create jobs if it doesn't exit
+    file:
+      path: ~/jobs
+      state: directory
+
+  - name: Change StrictHostKeyChecking to no
+    lineinfile: 
+      path: /etc/ssh/ssh_config
+      regexp: '#   StrictHostKeyChecking ask'
+      line: '   StrictHostKeyChecking no'
+    become: true
