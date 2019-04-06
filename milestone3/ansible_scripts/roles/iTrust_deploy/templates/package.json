@@ -3,13 +3,13 @@
     "name": "itrust2-v4",
     "version": "",
     "description": "",
-    "main": "fuzzer.js",
+    "main": "trigger.js",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
       "type": "git",
-      "url": "https://github.ncsu.edu/sseelam2/iTrust2-v4.git"
+      "url": "https://github.com/sseelam2/iTrust2-v4.git"
     },
     "author": "",
     "license": "ISC",

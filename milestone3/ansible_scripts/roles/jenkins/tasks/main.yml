@@ -203,19 +203,14 @@
 
   - name: Add config file for ssh for github ncsu host
     copy:
-      src: "~/DevopsProject/milestone2/ansible_scripts/roles/jenkins/templates/config"
+      src: "~/DevopsProject/milestone3/ansible_scripts/roles/jenkins/templates/config"
       dest: /root/.ssh/config
     become: true
 
   - name: Copy jenkins_jobs.ini file to jenkins server
     template:
-      src: "~/DevopsProject/milestone2/ansible_scripts/roles/jenkins/templates/jobs.ini"
+      src: "~/DevopsProject/milestone3/ansible_scripts/roles/jenkins/templates/jobs.ini"
       dest: ~/jenkins_jobs.ini
-
-  - name: Copy jenkins_jobs.ini file to jenkins server
-    template:
-      src: "~/DevopsProject/milestone2/ansible_scripts/roles/jenkins/templates/deploy"
-      dest: ~/deploy
 
   - name: create jobs folder to create jobs if it doesn't exit
     file:

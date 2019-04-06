@@ -1,0 +1,35 @@
+- job:
+    name: "{{itrust_deploy_name}}"
+    scm: 
+      - git: 
+          
+          url: http://{{gituser}}:{{gitpass}}@github.com/sseelam2/iTrust2-v4.git
+          branches: 
+            - origin/master
+            - ${sha1}
+    triggers:
+      - pollscm:
+          cron: ""
+
+    builders:
+
+      - shell: |
+          echo "\n..............Deploy.................."
+
+  
+    publishers:          
+      - postbuildscript:
+          builders:
+            - role: BOTH
+              build-on:
+                - SUCCESS
+                - FAILURE
+              build-steps:
+                - shell: |
+                    today=`date +%Y-%m-%d.%H:%M:%S`
+
+                    
+
+                    
+
+

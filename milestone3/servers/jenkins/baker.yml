@@ -1,8 +1,6 @@
 name: jenkins
 vm:
-  memory: "8192"
+  memory: "4096"
   ip: 192.168.33.72
 tools:
   - ansible
-
-

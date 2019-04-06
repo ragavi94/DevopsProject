@@ -1,0 +1,8 @@
+- name: deploying itrust
+  hosts: itrust
+  become: true
+  roles:
+    - java
+    - mysql
+    - maven
+    - deploy_itrust

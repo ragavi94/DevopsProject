@@ -29,6 +29,7 @@
 
   itrust_name: "itrust_job"
   itrust_fuzzer_name: "itrust_fuzzer_job"
+  itrust_deploy_name: "itrust_deploy_job"
   username: "devopshrss"
   password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -72,8 +73,8 @@
           6637
 
   passphrase: "GitPassPhrase"
-  itrust_dir : /home/harish/Project
-  devops_milestone_dir : /home/harish
+  itrust_dir : /home/ragavi/Project
+  devops_milestone_dir : /home/ragavi
 
 
 

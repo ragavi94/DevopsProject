@@ -25,21 +25,21 @@
         git clone https://github.com/sseelam2/iTrust2-v4.git
       
 
-    - name: adding pre-push git hook
+    - name: adding post-receive git hook
       template:
-        src: "{{ devops_milestone_dir }}/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/pre-push"
-        dest: "{{ itrust_dir }}/iTrust2-v4/.git/hooks/pre-push"
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/iTrust_deploy/templates/post-receive"
+        dest: "{{ itrust_dir }}/iTrust2-v4/.git/hooks/post-receive"
         mode: 0767
 
-    - name: Add Fuzzer.js file to the git Repo
+    - name: Add trigger.js file to the git Repo
       copy:
-        src: "{{ devops_milestone_dir }}/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/fuzzer.js"
-        dest: "{{ itrust_dir }}/iTrust2-v4/fuzzer.js"
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/iTrust_deploy/templates/trigger.js"
+        dest: "{{ itrust_dir }}/iTrust2-v4/trigger.js"
         mode: 0666
 
     - name: Add package.json file to the git Repo
       copy:
-        src: "{{ devops_milestone_dir }}/DevopsProject/milestone2/ansible_scripts/roles/iTrust_fuzzer/templates/package.json"
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/iTrust_deploy/templates/package.json"
         dest: "{{ itrust_dir }}/iTrust2-v4/package.json"
         mode: 0666
     
@@ -55,8 +55,8 @@
         sudo npm install random-js
         npm install jenkins-api
         sudo git checkout master 
-        sudo touch testabfile2
-        sudo git add testabfile2
+        sudo touch deployfile
+        sudo git add deployfile
         sudo git commit -m "commit after changes"
         
 
@@ -69,7 +69,6 @@
         chdir: ~/Project/iTrust2-v4
       register: output_var
       become: true
-
 
     - name: debug messages
       debug:
