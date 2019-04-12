@@ -16,20 +16,35 @@
         state: absent
         path: "{{ itrust_dir }}/iTrust2-v4"
       when: workspace.stat.exists
-      
-
-    
+      become: true
+        
     - name: Clone itrust Git Repository
       shell: |
         cd {{ itrust_dir }}
         git clone https://github.com/sseelam2/iTrust2-v4.git
+
+    - name: check if itrust bare repo exists
+      file:
+        path: "{{ itrust_dir }}/itrust.git"
+        state: directory
+
+    - name: make itrust bare repo
+      shell: |
+        cd "{{ itrust_dir }}/itrust.git"
+        sudo git init --bare 
+
+    - name: set itrust.git to be prod
+      shell: |
+        cd "{{ itrust_dir }}/iTrust2-v4"
+        sudo git remote add prod {{ itrust_dir }}/itrust.git
       
 
     - name: adding post-receive git hook
       template:
         src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/iTrust_deploy/templates/post-receive"
-        dest: "{{ itrust_dir }}/iTrust2-v4/.git/hooks/post-receive"
+        dest: "{{ itrust_dir }}/itrust.git/hooks/post-receive"
         mode: 0767
+      become: true 
 
     - name: Add trigger.js file to the git Repo
       copy:
@@ -42,7 +57,11 @@
         src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/iTrust_deploy/templates/package.json"
         dest: "{{ itrust_dir }}/iTrust2-v4/package.json"
         mode: 0666
-    
+
+    - name: install pip
+      apt:
+        name: python-pip
+      become: true
     - name: install pexpect
       pip:
         name: pexpect
@@ -50,26 +69,42 @@
 
     - name: Git add and checkout master
       shell: |
-        cd ~/Project/iTrust2-v4
-        sudo npm install 
+        cd {{ itrust_dir }}/iTrust2-v4
+        sudo npm install
         sudo npm install random-js
         npm install jenkins-api
         sudo git checkout master 
-        sudo touch deployfile
-        sudo git add deployfile
-        sudo git commit -m "commit after changes"
-        
+        sudo touch deployfile6
+        sudo git add deployfile6
+        sudo git commit -m "added new file"
 
-    - name: Git push
+    - name:  Git push to origin
       expect:
-        command: git push
+        command:  git push
         responses:
           "Username for 'https://github.com':": "{{ git_user }}"
           "Password for 'https://sseelam2@github.com':": "{{ git_pass }}"
-        chdir: ~/Project/iTrust2-v4
+        chdir: "{{ itrust_dir }}/iTrust2-v4"
       register: output_var
       become: true
+
+
+    - name: Git push to prod
+      expect:
+        command: git push prod master
+        responses:
+          "Username for 'https://github.com':": "{{ git_user }}"
+          "Password for 'https://sseelam2@github.com':": "{{ git_pass }}"
+        chdir: "{{ itrust_dir }}/iTrust2-v4"
+      register: output_var1
+      become: true
+
 
     - name: debug messages
       debug:
         msg: "{{ output_var }}"
+
+    - name: debug messages
+      debug:
+        msg: "{{ output_var1 }}"
+   

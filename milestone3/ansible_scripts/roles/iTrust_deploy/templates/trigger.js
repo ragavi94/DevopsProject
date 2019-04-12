@@ -13,23 +13,14 @@ const triggerBuild = (JENKINS_URL, githubURL, jenkinsToken, sha1) => {
     }
 }
 
-const commit = (master_sha1, n) => {
-    
-    child_process.execSync(`git stash && git checkout master && git checkout stash -- . && git commit -am "changes to file :${master_sha1}: # ${n+1}" && git push`)
-    child_process.execSync('git stash drop');
-    let lastSha1 = child_process.execSync(`git rev-parse master`).toString().trim()
-    return lastSha1;
-}
-
-
 const runProcess = (n) => {
     let master_sha1 = process.env.MASTER_SHA1;
     let JENKINS_URL = process.env.JENKINS_IP;
     let jenkinsToken = process.env.JENKINS_BUILD_TOKEN;
-    let githubURL = process.env.GITHUB_URL;
-
-    let lastSha1 = commit(master_sha1, i);
-    triggerBuild(JENKINS_URL, githubURL , jenkinsToken, lastSha1)
+    let githubURL = process.env.GITHUB_URL;  
+    console.log(githubURL) 
+    console.log(master_sha1)
+    triggerBuild(JENKINS_URL, githubURL , jenkinsToken, master_sha1)
 
     
 }

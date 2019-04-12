@@ -6,6 +6,6 @@ export JENKINS_IP="{{JENKINS_URL}}"
 echo "\n -------------- POST RECEIVE GIT HOOK -------------"
 if [ $BRANCHNAME = 'master' ]; then
     echo "CURRENT CHECKED OUT BRANCH IS: master"
-    node trigger.js
+    node {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/iTrust_deploy/templates/trigger.js
 fi
 
