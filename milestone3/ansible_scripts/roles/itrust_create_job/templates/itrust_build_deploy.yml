@@ -1,25 +1,50 @@
 - hosts: localhost
   vars:
-    itrust_name: {{itrust_deploy_name}}
-    email_password: {{mailpwd}}
-    mysql_password: {{mysql_password}}
+    itrust_name: "itrust_deploy_job"
+    email_password: "smsmmsme"
+    mysql_password: "root"
+
   tasks:
+
+    - name: Check if jenkins workspace exists
+      file: 
+        path: /var/lib/jenkins/workspace/{{itrust_name}}
+        state: directory
+  
+    - name: check if itrust workspace folder exists
+      stat:
+        path: "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4"
+      register: workspace_dir
+
+    - name: delete if the itrust directory exists
+      file:
+        state: absent
+        path: "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4"
+      when: workspace_dir.stat.exists
+      become: true
+
+    - name: Clone itrust Git Repository
+      shell: |
+        cd /var/lib/jenkins/workspace/{{itrust_name}}/
+        git clone http://github.com/sseelam2/iTrust2-v4.git
+      become: true
+
     - name: Copy DB Properties
       copy:
-        src: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2/src/main/java/db.properties.template
-        dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2/src/main/java/db.properties
+        src: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties.template
+        dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties
       become: true
 
 
     - name: Copy Email Properties
       copy:
-        src: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2/src/main/java/email.properties.template
-        dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2/src/main/java/email.properties
+        src: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template
+        dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties
       become: true
 
     - name: Change db properties to set custom db username and password
       lineinfile:
-        dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2/src/main/java/db.properties
+        dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/db.properties
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
       with_items:
@@ -30,7 +55,7 @@
 
     - name: Change email properties to set custom email username and password
       lineinfile:
-        dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2/src/main/java/email.properties
+        dest: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
       with_items:
@@ -43,18 +68,5 @@
     - name: building mvn
       command: mvn clean
       args:
-        chdir: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2
+        chdir: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2
       become: true
-
-    - name: building mvn
-      command: mvn -f pom-data.xml process-test-classes
-      args:
-        chdir: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2
-      become: true
-
-    - name: test suite run
-      command: mvn clean test verify checkstyle:checkstyle
-      args:
-        chdir: /var/lib/jenkins/workspace/{{itrust_name}}/iTrust2
-      become: true
-      ignore_errors: true

@@ -1,6 +1,6 @@
 - job:
     name: "{{ checkboxio_job_name }}"
-    description: 'creating job'
+    description: 'creating checkbox.io job'
     project-type: freestyle
     builders:
       - shell: |
@@ -20,6 +20,7 @@
                   build-on: 
                       - SUCCESS 
                   build-steps:     
-                      - shell: 'sudo ansible-playbook /jenkins/deploy_checkbox.yml -i /jenkins/inventory'
+                      - shell: |
+                            sudo ansible-playbook /var/lib/jenkins/provision.yml -i ~/local_inventory
                 
 

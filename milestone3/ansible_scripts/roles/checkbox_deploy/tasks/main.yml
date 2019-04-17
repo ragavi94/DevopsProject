@@ -1,44 +1,44 @@
 ---
     - name: check if Project folder exists or create it
       file:
-        path: "{{ itrust_dir }}"
+        path: "{{ checkbox_dir }}"
         state: directory
         mode: 0775
       
-    - name: check if itrust workspace folder exists
+    - name: check if checkbox workspace folder exists
       stat:
-        path: "{{ itrust_dir }}/iTrust2-v4"
+        path: "{{ checkbox_dir }}/checkbox.io"
       register: workspace
 
-    - name: delete if the itrust directory exists
+    - name: delete if the checkbox directory exists
       file:
         state: absent
-        path: "{{ itrust_dir }}/iTrust2-v4"
+        path: "{{ checkbox_dir }}/checkbox.io"
       when: workspace.stat.exists
       become: true
         
-    - name: Clone itrust Git Repository
+    - name: Clone checkbox.io Git Repository
       shell: |
-        cd {{ itrust_dir }}
-        git clone https://github.com/sseelam2/iTrust2-v4.git      
+        cd {{ checkbox_dir }}
+        git clone https://github.com/sseelam2/checkbox.io.git    
 
     - name: adding post-receive git hook
       template:
-        src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/iTrust_deploy/templates/post-receive"
-        dest: "{{ itrust_dir }}/iTrust2-v4/.git/hooks/pre-push"
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/checkbox_deploy/templates/post-receive"
+        dest: "{{ checkbox_dir }}/checkbox.io/.git/hooks/pre-push"
         mode: 0767
       become: true 
 
     - name: Add trigger.js file to the git Repo
       copy:
-        src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/iTrust_deploy/templates/trigger.js"
-        dest: "{{ itrust_dir }}/iTrust2-v4/trigger.js"
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/checkbox_deploy/templates/trigger.js"
+        dest: "{{ checkbox_dir }}/checkbox.io/trigger.js"
         mode: 0666
 
     - name: Add package.json file to the git Repo
       copy:
-        src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/iTrust_deploy/templates/package.json"
-        dest: "{{ itrust_dir }}/iTrust2-v4/package.json"
+        src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/checkbox_deploy/templates/package.json"
+        dest: "{{ checkbox_dir }}/checkbox.io/package.json"
         mode: 0666
 
     - name: install pip
@@ -52,12 +52,12 @@
 
     - name: Git add and checkout master
       shell: |
-        cd {{ itrust_dir }}/iTrust2-v4
+        cd {{ checkbox_dir }}/checkbox.io
         sudo npm install
         sudo npm install random-js
         npm install jenkins-api
         sudo git checkout master 
-        sudo touch deployfile6
+        sudo touch deployfile
         sudo git add deployfile6
         sudo git commit -m "added new file"
 
@@ -67,7 +67,7 @@
         responses:
           "Username for 'https://github.com':": "{{ git_user }}"
           "Password for 'https://sseelam2@github.com':": "{{ git_pass }}"
-        chdir: "{{ itrust_dir }}/iTrust2-v4"
+        chdir: "{{ checkbox_dir }}/checkbox.io"
       register: output_var
       become: true
 

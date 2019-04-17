@@ -8,7 +8,7 @@
 - name: Copy iTrust builder ansible playbook
   copy:
     src: "~/DevopsProject/milestone3/ansible_scripts/roles/itrust_create_job/templates/itrust_build_deploy.yml"
-    dest: /var/lib/jenkins/itrust_build_tmp.yml
+    dest: /var/lib/jenkins/itrust_build_deploy.yml
     owner: jenkins
     group: jenkins
     mode: 0666
@@ -23,10 +23,32 @@
     mode: 0666
   become: true
 
+
 - name: Copy itrust job builder script
   template:
       src: ~/DevopsProject/milestone3/ansible_scripts/roles/itrust_create_job/templates/itrust_deploy_script.yml
       dest: /home/vagrant/jobs/itrust_deploy_script.yml
+
+- name: Copy iTrust Production Server provision ansible playbook
+  copy:
+    src: "~/DevopsProject/milestone3/ansible_scripts/roles/itrust_create_job/templates/provision.yml"
+    dest: /var/lib/jenkins/provision.yml
+    owner: jenkins
+    group: jenkins
+    mode: 0666
+  become: true
+
+- name: Copy itrust Provision Scripts
+  copy:
+      src: ~/DevopsProject/milestone3/ansible_scripts/roles/itrust_create_job/templates/provision
+      dest: /home/vagrant/
+  become: true
+
+- name: Copy itrust deploy Scripts
+  copy:
+      src: ~/DevopsProject/milestone3/ansible_scripts/roles/deploy
+      dest: /home/vagrant/
+  become: true
 
 - name: copy jenkins_jobs to iTrust_jobs
   shell: cp ~/jenkins_jobs.ini ~/itrust_jobs.ini

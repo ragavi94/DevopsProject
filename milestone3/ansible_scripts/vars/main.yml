@@ -73,8 +73,9 @@
           6637
 
   passphrase: "GitPassPhrase"
-  itrust_dir : /home/swetha/Project
-  devops_milestone_dir : /home/swetha
+  itrust_dir : /home/ragavi/Project
+  checkbox_dir: /home/ragavi/checkboxProject
+  devops_milestone_dir : /home/ragavi
 
 
 

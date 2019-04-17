@@ -7,6 +7,6 @@ echo "\n -------------- POST RECEIVE GIT HOOK -------------"
 if [ $BRANCHNAME = 'master' ]; then
     echo "CURRENT CHECKED OUT BRANCH IS: master"
     echo "git-url",$GITHUB_URL
-    node {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/iTrust_deploy/templates/trigger.js
+    node {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/checkbox_deploy/templates/trigger.js
 fi
 

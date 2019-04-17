@@ -15,56 +15,72 @@
         update_cache: yes
         cache_valid_time: 3600
 
-
     - name: Clone checkbox.io git repository
       git:
         repo: 'http://github.com/sseelam2/iTrust2-v4.git'
-        dest: /home/vagrant/iTrust
+        dest: ~/iTrust2-v4
         update: no
 
-    - name: makes changes to config
-      shell: |
-        sed -i 's/username root/username mysql-server/' "/var/lib/jenkins/workspace/{{ itrust_name }}/iTrust2-v4/iTrust2/src/main/java/db.properties.template"
-        sed -i 's/password/password root/' "/var/lib/jenkins/workspace/{{ itrust_name }}/iTrust2-v4/iTrust2/src/main/java/db.properties.template"
-        sed -i 's/username/username swarna.ragz@gmail.com/' "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template"
-        sed -i 's/password/password Ramswar3151\&/' "/var/lib/jenkins/workspace/{{itrust_name}}/iTrust2-v4/iTrust2/src/main/java/email.properties.template"
+    - name: Copy DB Properties
+      copy:
+        src: ~/iTrust2-v4/iTrust2/src/main/java/db.properties.template
+        dest: ~/iTrust2-v4/iTrust2/src/main/java/db.properties
+        remote_src: yes
+      become: true
+      
+    - name: Copy Email Properties
+      copy:
+        src: ~/iTrust2-v4/iTrust2/src/main/java/email.properties.template
+        dest: ~/iTrust2-v4/iTrust2/src/main/java/email.properties
+        remote_src: yes
+      become: true
 
-    - name: copy necessary files to destination
-      copy: 
-        src: /home/vagrant/iTrust/iTrust2/src/main/java/db.properties.template
-        dest: /home/vagrant/iTrust/iTrust2/src/main/java/db.properties  
-        remote_src: yes 
-      become: yes
+    - name: Change db properties to set custom db username and password
+      lineinfile:
+        dest: ~/iTrust2-v4/iTrust2/src/main/java/db.properties
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      with_items:
+        - { regexp: '^username root', line: 'username mysql-server' }
+        - { regexp: '^password', line: 'password {{ mysql_password }}' }
+      become: true
+      register: value
+      
 
-    - name: copy necessary files to destination
-      copy: 
-        src: /home/vagrant/iTrust/iTrust2/src/main/java/email.properties.template
-        dest: /home/vagrant/iTrust/iTrust2/src/main/java/email.properties  
-        remote_src: yes 
-      become: yes
+    - name: Change email properties to set custom email username and password
+      lineinfile:
+        dest: ~/iTrust2-v4/iTrust2/src/main/java/email.properties
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      with_items:
+        - { regexp: '^from', line: 'from devopshrss' }
+        - { regexp: '^username', line: 'username devopshrss' }
+        - { regexp: '^password', line: 'password {{email_password}}' }
+      become: true
+      register: value
 
     - name: mysql.conf file changes
       lineinfile:
-          path: /etc/mysql/mysql.conf.d/mysqld.cnf
-          line: skip-grant-tables
-          insertafter: skip-external-locking
+        path: /etc/mysql/my.cnf
+        line: skip-grant-tables
+        insertafter: skip-external-locking
+        remote_src: yes
+      become: true
 
     - name: Restart mysql
       service: name=mysql state=restarted
       become: yes
-
-
+      
     - name: building mvn
       command: mvn clean
       args:
-        chdir: /home/vagrant/iTrust/iTrust2
-      become: true
+        chdir: ~/iTrust2-v4/iTrust2
+
 
     - name: building mvn
       command: mvn -f pom-data.xml process-test-classes
       args:
-        chdir: /home/vagrant/iTrust/iTrust2
-      become: true
+        chdir: ~/iTrust2-v4/iTrust2
 
     - name: Update and Upgrade
       apt:
@@ -74,6 +90,6 @@
 
     - name: Running jetty
       shell: |
-        cd /home/vagrant/iTrust/iTrust2
+        cd  ~/iTrust2-v4
         nohup sudo mvn jetty:run >/dev/null 2>&1 &
 ...

@@ -6,7 +6,7 @@ var http = require('http');
 
 const triggerBuild = (JENKINS_URL, githubURL, jenkinsToken, sha1) => {
     try {
-        child_process.execSync(`curl "http://${JENKINS_URL}:5001/git/notifyCommit?url=${githubURL}&branches=master&sha1=${sha1}"`)
+        child_process.execSync(`curl "http://${JENKINS_URL}:8080/git/notifyCommit?url=${githubURL}&branches=master&sha1=${sha1}"`)
         console.log(`build for master branch deploy triggered:${sha1}`)     
     } catch (error) {
         console.log(`error in build:${sha1}`)

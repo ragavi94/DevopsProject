@@ -1,0 +1,67 @@
+- name: Provision Production Server
+  hosts: localhost
+  gather_facts: no
+  
+  tasks:
+    - name: check if do ssh key exists
+      stat: path=~/.ssh/do_rsa
+      register: gcp_var
+
+    - name: Generate SSH key for Remote Production instance
+      expect:
+        command: ssh-keygen -t rsa -b 2048 -C "rraman2" -f "do_rsa"
+        responses:
+          'Enter file in which to save the key \(/home/vagrant/.ssh/do_rsa\):': ''
+          'Enter passphrase \(empty for no passphrase\):': ''
+          'Enter same passphrase again:': ''
+        chdir: /home/vagrant/.ssh
+        creates: /home/vagrant/.ssh/do_rsa
+      ignore_errors: true
+      no_log: True
+      
+
+    - name: change permissions of ssh keys
+      file:
+        path: /home/vagrant/.ssh/do_rsa
+        owner: vagrant
+        group: vagrant
+      become: true
+
+    - name: change permissions of ssh keys
+      file:
+        path: /home/vagrant/.ssh/do_rsa.pub
+        owner: vagrant
+        group: vagrant
+      become: true
+
+    - name: NPM install
+      npm:
+        path: /home/vagrant/provision
+        state: latest
+      become: true
+
+    - name: read environment variable
+      shell: |
+        cat /home/vagrant/provision/access
+      register: env_var
+              
+    - name: Run script to create production remote server
+      command: node /home/vagrant/provision/main.js
+      environment:
+        DOTOKEN: "{{ env_var.stdout }}"
+      register: output_var
+
+    - name: debug messages
+      debug: var=output_var
+
+    - name: Assign Remote Server IP address to Inventory file
+      lineinfile:
+        dest: /home/vagrant/deploy/itrust_inventory
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      with_items:
+        - { regexp: '.*(ansible_ssh_user=root ansible_ssh_private_key_file=/home/vagrant/.ssh/do_rsa)', line: '{{ output_var.stdout }} ansible_ssh_user=root ansible_ssh_private_key_file=/home/vagrant/.ssh/do_rsa' }
+      become: true
+
+    
+
