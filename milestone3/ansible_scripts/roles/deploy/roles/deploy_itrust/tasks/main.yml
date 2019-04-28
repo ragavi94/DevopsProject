@@ -1,4 +1,58 @@
 ---
+    - name: Update and Upgrade
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install dependencies of Redis
+      apt:
+        pkg: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+      - gcc
+      - make
+      - libc6-dev
+
+    - name: Download Redis
+      apt_repository:
+        repo: 'ppa:chris-lea/redis-server'
+        state: present
+    - name: apt-get update_cache
+      apt:
+        update_cache: yes
+      changed_when: False
+
+    - name: Ensure Redis is present
+      apt: pkg=redis-server state=latest
+
+    - name: Start Redis
+      service: name=redis-server state=started
+
+    - name: add ip address in conf file
+      replace:
+        dest: /etc/redis/redis.conf
+        regexp: 'bind 127.0.0.1'
+        replace: '# bind 127.0.0.1'
+
+    - name: Comment out Protected Yes in redis.conf file
+      replace:
+        dest: "/etc/redis/redis.conf"
+        regexp: '^protected-mode'
+        replace: '#protected-mode'
+
+    - name: Insert protected-mode No in redis.conf file
+      lineinfile:
+        path: "/etc/redis/redis.conf"
+        insertafter: '^#protected-mode'
+        line: 'protected-mode no'
+
+    - name: Restart redis service
+      service: name=redis-server state=restarted
+
+    - name: Allow {{redis_port}} through firewall
+      shell: ufw allow {{redis_port}}
 
     - name: Update and Upgrade
       apt:
@@ -9,15 +63,17 @@
     - name: Install Git Package 
       apt: name=git state=present update_cache=true
 
-    - name: Update and Upgrade
-      apt:
-        upgrade: yes
-        update_cache: yes
-        cache_valid_time: 3600
+    - name: Delete running jobs
+      shell: ps -ef | grep -v grep | grep -w "jetty" | awk '{print $2}'
+      register: running_process
 
-    - name: Clone checkbox.io git repository
+    - name: itrust running process termination
+      shell: "kill -9 {{ item }}"
+      with_items: "{{ running_process.stdout_lines }}"
+
+    - name: Clone itrust git repository
       git:
-        repo: 'http://github.com/sseelam2/iTrust2-v4.git'
+        repo: 'https://github.com/sseelam2/iTrust2-v4.git'
         dest: ~/iTrust2-v4
         update: no
 
@@ -45,7 +101,6 @@
         - { regexp: '^password', line: 'password {{ mysql_password }}' }
       become: true
       register: value
-      
 
     - name: Change email properties to set custom email username and password
       lineinfile:
@@ -64,32 +119,36 @@
         path: /etc/mysql/my.cnf
         line: skip-grant-tables
         insertafter: skip-external-locking
-        remote_src: yes
       become: true
 
     - name: Restart mysql
       service: name=mysql state=restarted
       become: yes
-      
+
+    - name: Wait for mysql to come up
+      wait_for: 
+        port: 3306
+
     - name: building mvn
       command: mvn clean
       args:
         chdir: ~/iTrust2-v4/iTrust2
-
 
     - name: building mvn
       command: mvn -f pom-data.xml process-test-classes
       args:
         chdir: ~/iTrust2-v4/iTrust2
 
-    - name: Update and Upgrade
-      apt:
-        upgrade: yes
-        update_cache: yes
-        cache_valid_time: 3600
+    - name: Wait for application to start up
+      pause:
+        seconds: 45
 
     - name: Running jetty
-      shell: |
-        cd  ~/iTrust2-v4
-        nohup sudo mvn jetty:run >/dev/null 2>&1 &
+      shell: nohup mvn jetty:run &
+      args:
+        chdir: ~/iTrust2-v4/iTrust2
+
+    - name: Wait for application to come up
+      wait_for:
+        port: 8080
 ...

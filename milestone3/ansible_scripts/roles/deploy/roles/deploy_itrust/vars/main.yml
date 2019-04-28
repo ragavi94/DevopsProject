@@ -1,4 +1,5 @@
 --- 
   mysql_password: "root"
   email_password: "smsmmsme"
+  redis_port: 6379
 ...

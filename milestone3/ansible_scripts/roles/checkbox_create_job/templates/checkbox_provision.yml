@@ -1,0 +1,65 @@
+- name: Provision Production Server
+  hosts: localhost
+  gather_facts: no
+  
+  tasks:
+    - name: check if do ssh key exists
+      stat: path=~/.ssh/io_rsa
+      register: gcp_var
+
+    - name: Generate SSH key for Remote Production instance
+      expect:
+        command: ssh-keygen -t rsa -b 2048 -C "rraman2" -f "io_rsa"
+        responses:
+          'Enter file in which to save the key \(/home/vagrant/.ssh/io_rsa\):': ''
+          'Enter passphrase \(empty for no passphrase\):': ''
+          'Enter same passphrase again:': ''
+        chdir: /home/vagrant/.ssh
+        creates: /home/vagrant/.ssh/io_rsa
+      ignore_errors: true
+      no_log: True
+      
+
+    - name: change permissions of ssh keys
+      file:
+        path: /home/vagrant/.ssh/io_rsa
+        owner: vagrant
+        group: vagrant
+      become: true
+
+    - name: change permissions of ssh keys
+      file:
+        path: /home/vagrant/.ssh/io_rsa.pub
+        owner: vagrant
+        group: vagrant
+      become: true
+
+    - name: NPM install
+      npm:
+        path: /home/vagrant/checkbox_provision
+        state: latest
+      become: true
+
+    - name: read environment variable
+      shell: |
+        cat /home/vagrant/checkbox_provision/access
+      register: env_var
+              
+    - name: Run script to create production remote server
+      command: node /home/vagrant/checkbox_provision/main.js
+      environment:
+        DOTOKEN: "{{ env_var.stdout }}"
+      register: output_var #192.168.1.1,192.168.1.2
+
+    - name: debug messages
+      debug: 
+        msg: "{{ output_var.stdout.split(\",\") }}"
+      register: output_iplist
+
+    - name: editing inventory to add ips of remote servers
+      lineinfile:
+        dest: /home/vagrant/deploy/checkbox_inventory
+        insertafter: '[checkbox]'
+        line: "{{ item }} ansible_ssh_user=root ansible_ssh_private_key_file=/home/vagrant/.ssh/io_rsa"
+      loop: "{{ output_iplist.msg }}"
+

@@ -1,4 +1,10 @@
 ---
+    - name: Update and Upgrade
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 3600
+
     - name: Installing nodejs
       apt: 
         name: nodejs 
@@ -41,8 +47,8 @@
 
     - name: Clone checkbox.io git repository
       git:
-        repo: 'https://github.com/chrisparnin/checkbox.io.git'
-        dest: /home/vagrant/checkbox.io/
+        repo: 'https://github.com/sseelam2/checkbox.git'
+        dest: /home/checkbox.io/
         update: no
 
     - name: Update and Upgrade packages
@@ -61,15 +67,15 @@
 
     - name: changes in 'default' file to refer local 'public_html'
       replace:
-        dest: "/home/vagrant/checkbox.io/local-conf/default"
+        dest: "/home/checkbox.io/local-conf/default"
         regexp: "root (.)+;"
-        replace: "root /home/vagrant/checkbox.io/public_html/;"
+        replace: "root /home/checkbox.io/public_html/;"
         remote_src: yes
       become: true
 
     - name: copying nginx config to /etc
       copy: 
-        src: /home/vagrant/checkbox.io/local-conf/nginx.conf 
+        src: /home/checkbox.io/local-conf/nginx.conf 
         dest: /etc/nginx/nginx.conf
         mode: 0644
         remote_src: yes 
@@ -78,7 +84,7 @@
 
     - name: copying nginx default file to /etc
       copy: 
-        src: /home/vagrant/checkbox.io/local-conf/default 
+        src: /home/checkbox.io/local-conf/default 
         dest: /etc/nginx/sites-available/default 
         mode: 0644 
         remote_src: yes 
@@ -108,11 +114,11 @@
       become: yes
 
     - name: Set permissions for mongodb storage
-      file: path=/data/db owner=vagrant group=mongodb mode=0775 state=absent
+      file: path=/data/db owner=root group=mongodb mode=0775 state=absent
       become: yes
 
     - name: Set permissions for mongodb storage
-      file: path=/data/db owner=vagrant group=mongodb mode=0775 state=directory
+      file: path=/data/db owner=root group=mongodb mode=0775 state=directory
       become: yes
 
     - name: start the mongod service
@@ -131,7 +137,7 @@
     
     - name: Installing dependencies
       npm:
-        path: "/home/vagrant/checkbox.io/server-side/site"
+        path: "/home/checkbox.io/server-side/site"
 
     - name: "Install forever"
       npm: name=forever global=yes state=present
@@ -153,8 +159,8 @@
     - name: "start checkboxio at vm"
       command: forever start --minUptime 1000 --spinSleepTime 100 -o out.log -e err.log server.js
       args:
-          chdir: /home/vagrant/checkbox.io/server-side/site/
-      when: "forever_list.stdout.find('/home/vagrant/checkbox.io/server-side/site/server.js') == -1"
+          chdir: /home/checkbox.io/server-side/site/
+      when: "forever_list.stdout.find('/home/checkbox.io/server-side/site/server.js') == -1"
       environment:
         APP_PORT: 3002
         MONGO_IP: 127.0.0.1

@@ -1,6 +1,8 @@
 ---
   checkboxio_job_name: "checkbox_job"
+  checkboxio_canary_job_name: "checkbox_canary_job"
   jenkins_url: "http://localhost:8080"
+  jenkins_build_url: "http://192.168.33.72:8080"
   jenkins_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           32303736346330643963633236303336356632313461653338333337616161646434623666613832
@@ -76,9 +78,4 @@
   itrust_dir : /home/ragavi/Project
   checkbox_dir: /home/ragavi/checkboxProject
   devops_milestone_dir : /home/ragavi
-
-
-
-
-
-...
+  master: 

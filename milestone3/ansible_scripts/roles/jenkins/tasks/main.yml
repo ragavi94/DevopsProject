@@ -58,6 +58,7 @@
     shell: 
       sudo apt install npm -y
     ignore_errors: yes
+    no_log: True
 
   - name: install pm2
     shell: sudo npm install pm2 -g

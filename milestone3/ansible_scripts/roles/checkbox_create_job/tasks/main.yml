@@ -5,25 +5,73 @@
     line: "jenkins ALL=(ALL) NOPASSWD: ALL"
   become: true
 
+- name: Copy checkbox job build playbook
+  template:
+      src: "~/DevopsProject/milestone3/ansible_scripts/roles/checkbox_create_job/templates/checkbox_build_deploy.yml"
+      dest:  /var/lib/jenkins/checkbox_build_deploy.yml
+  become: true
+
+- name: Copy checkbox job build playbook's inventory
+  template:
+      src: "~/DevopsProject/milestone3/ansible_scripts/roles/checkbox_create_job/templates/local_inventory"
+      dest:  /var/lib/jenkins/local_inventory
+  become: true
+
 - name: Copy checkbox job builder script
   template:
-      src: "~/DevopsProject/milestone2/ansible_scripts/roles/checkbox_create_job/templates/checkboxio_job_create.yml"
+      src: "~/DevopsProject/milestone3/ansible_scripts/roles/checkbox_create_job/templates/checkboxio_job_create.yml"
       dest: /home/vagrant/jobs/checkbox_job.yml
+  become: true
+
+- name: Copy checkbox canary ob builder script
+  template:
+      src: "~/DevopsProject/milestone3/ansible_scripts/roles/checkbox_create_job/templates/checkboxio_canary_job.yml"
+      dest: /home/vagrant/jobs/checkboxio_canary_job.yml
+  become: true
+
+- name: Copy checkbox Production Server provision ansible playbook
+  copy:
+    src: "~/DevopsProject/milestone3/ansible_scripts/roles/checkbox_create_job/templates/checkbox_provision.yml"
+    dest: /var/lib/jenkins/checkbox_provision.yml
+    owner: jenkins
+    group: jenkins
+    mode: 0666
+  become: true
+
+- name: Copy checkbox Provision Scripts
+  copy:
+      src: ~/DevopsProject/milestone3/ansible_scripts/roles/checkbox_create_job/templates/checkbox_provision
+      dest: /home/vagrant/
+  become: true
+
+- name: Copy DO access token
+  copy:
+      src: ~/DevopsProject/milestone3/ansible_scripts/access
+      dest: /home/vagrant/checkbox_provision/access
+  become: true
+
+
+- name: Copy checkbox deploy Scripts
+  copy:
+      src: ~/DevopsProject/milestone3/ansible_scripts/roles/deploy
+      dest: /home/vagrant/
+  become: true
+
+- name: Copy checkbox canary job inventory editor script
+  template:
+      src: "~/DevopsProject/milestone3/ansible_scripts/roles/checkbox_create_job/templates/write_canary_inventory.py"
+      dest: /home/vagrant/deploy/write_canary_inventory.py
+  become: true
+
+- name: Copy checkbox marqdown job inventory editor script
+  template:
+      src: "~/DevopsProject/milestone3/ansible_scripts/roles/checkbox_create_job/templates/write_marqdown_inventory.py"
+      dest: /home/vagrant/deploy/write_canary_inventory.py
+  become: true
+
  
 - name: create jobs
   shell: 'sudo jenkins-jobs --conf ~/jenkins_jobs.ini update ~/jobs'
-  
-- name: check if checkbox git folder exists
-  stat:
-    path: "/var/lib/jenkins/workspace/checkbox_job/checkbox.io/"
-  register: workspace
-
-- name: delete if the checkbox git directory exists
-  file:
-    state: absent
-    path: "/var/lib/jenkins/workspace/checkbox_job/checkbox.io/"
-  when: workspace.stat.exists
-  become: true
 
 - name: jenkins cli download
   get_url:
@@ -113,18 +161,18 @@
   file: path=/data/db owner=vagrant group=mongodb mode=0775 state=directory
   become: yes
 
-- name: start the mongod service
-  service: name=mongod state=started
-  become: yes
+#- name: start the mongod service
+#  service: name=mongod state=started
+#  become: yes
 
 - name: add admin user
   mongodb_user: database=admin name="admin" password="admin" login_port=27017 state=present roles=userAdminAnyDatabase,readWriteAnyDatabase,dbAdminAnyDatabase,clusterAdmin
   become: yes
   ignore_errors: yes
 
-- name: restart mongod service
-  service: name=mongod state=restarted
-  become: yes
+#- name: restart mongod service
+#  service: name=mongod state=restarted
+#  become: yes
 
 - name: setting environment variables
   lineinfile:

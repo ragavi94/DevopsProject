@@ -1,0 +1,81 @@
+    - name: check if checkbox workspace folder exists
+      stat:
+        path: "/home/checkbox.io"
+      register: workspace
+
+    - name: delete if the checkbox directory exists
+      file:
+        state: absent
+        path: "/home/checkbox.io"
+      when: workspace.stat.exists
+      become: true
+
+    - name: check if checkbox workspace folder exists
+      stat:
+        path: "/home/checkbox"
+      register: workspace
+
+    - name: delete if the checkbox directory exists
+      file:
+        state: absent
+        path: "/home/checkbox"
+      when: workspace.stat.exists
+      become: true
+        
+    - name: Clone checkbox.io Git Repository
+      shell: |
+        cd /home/
+        git clone -b canary https://github.com/sseelam2/checkbox.git
+    - name: Update and Upgrade packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: npm package
+      shell:
+        apt install npm -y
+      become: true
+
+    - name: changes in 'default' file to refer local 'public_html'
+      replace:
+        dest: "/home/checkbox/local-conf/default"
+        regexp: "root (.)+;"
+        replace: "root /home/checkbox/public_html/;"
+        remote_src: yes
+      become: true
+
+    - name: copying nginx config to /etc
+      copy: 
+        src: /home/checkbox/local-conf/nginx.conf 
+        dest: /etc/nginx/nginx.conf
+        mode: 0644
+        remote_src: yes 
+      become: yes
+      
+
+    - name: copying nginx default file to /etc
+      copy: 
+        src: /home/checkbox/local-conf/default 
+        dest: /etc/nginx/sites-available/default 
+        mode: 0644 
+        remote_src: yes 
+      become: yes
+    
+    - name: Installing dependencies
+      npm:
+        path: "/home/checkbox/server-side/site"
+
+    - name: restart mongod service
+      service: name=mongod state=restarted
+      become: yes
+          
+    - name: Restart nginx 
+      service: name=nginx state=restarted
+      become: yes
+      
+    - name: "start checkboxio at vm"
+      command: forever start server.js
+      args:
+          chdir: /home/checkbox/server-side/site/
+      become: true

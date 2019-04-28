@@ -7,38 +7,38 @@
       
     - name: check if checkbox workspace folder exists
       stat:
-        path: "{{ checkbox_dir }}/checkbox.io"
+        path: "{{ checkbox_dir }}/checkbox"
       register: workspace
 
     - name: delete if the checkbox directory exists
       file:
         state: absent
-        path: "{{ checkbox_dir }}/checkbox.io"
+        path: "{{ checkbox_dir }}/checkbox"
       when: workspace.stat.exists
       become: true
         
     - name: Clone checkbox.io Git Repository
       shell: |
         cd {{ checkbox_dir }}
-        git clone https://github.com/sseelam2/checkbox.io.git    
+        git clone https://github.com/sseelam2/checkbox.git    
 
     - name: adding post-receive git hook
       template:
         src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/checkbox_deploy/templates/post-receive"
-        dest: "{{ checkbox_dir }}/checkbox.io/.git/hooks/pre-push"
+        dest: "{{ checkbox_dir }}/checkbox/.git/hooks/pre-push"
         mode: 0767
       become: true 
 
     - name: Add trigger.js file to the git Repo
       copy:
         src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/checkbox_deploy/templates/trigger.js"
-        dest: "{{ checkbox_dir }}/checkbox.io/trigger.js"
+        dest: "{{ checkbox_dir }}/checkbox/trigger.js"
         mode: 0666
 
     - name: Add package.json file to the git Repo
       copy:
         src: "{{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/checkbox_deploy/templates/package.json"
-        dest: "{{ checkbox_dir }}/checkbox.io/package.json"
+        dest: "{{ checkbox_dir }}/checkbox/package.json"
         mode: 0666
 
     - name: install pip
@@ -52,13 +52,13 @@
 
     - name: Git add and checkout master
       shell: |
-        cd {{ checkbox_dir }}/checkbox.io
+        cd {{ checkbox_dir }}/checkbox
         sudo npm install
         sudo npm install random-js
-        npm install jenkins-api
+        sudo npm install jenkins-api
         sudo git checkout master 
         sudo touch deployfile
-        sudo git add deployfile6
+        sudo git add deployfile
         sudo git commit -m "added new file"
 
     - name:  Git push to origin
@@ -67,7 +67,7 @@
         responses:
           "Username for 'https://github.com':": "{{ git_user }}"
           "Password for 'https://sseelam2@github.com':": "{{ git_pass }}"
-        chdir: "{{ checkbox_dir }}/checkbox.io"
+        chdir: "{{ checkbox_dir }}/checkbox"
       register: output_var
       become: true
 

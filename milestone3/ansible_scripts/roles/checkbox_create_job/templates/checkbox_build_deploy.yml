@@ -1,0 +1,57 @@
+- hosts: localhost
+  vars:
+    checkboxio_job_name: "checkbox_job"
+  tasks:  
+
+    - name: Check if jenkins workspace exists
+      file: 
+        path: /var/lib/jenkins/workspace/{{checkboxio_job_name}}
+        state: directory
+
+    - name: check if checkbox workspace folder exists
+      stat:
+        path: "/var/lib/jenkins/workspace/{{checkboxio_job_name}}/checkbox.io"
+      register: workspace_dir
+      
+
+    - name: delete if the checkbox directory exists
+      file:
+        state: absent
+        path: "/var/lib/jenkins/workspace/{{checkboxio_job_name}}/checkbox.io"
+      when: workspace_dir.stat.exists
+      become: true
+
+    - name: Clone checkbox Git Repository
+      shell: |
+        cd /var/lib/jenkins/workspace/{{checkboxio_job_name}}/
+        git clone https://github.com/sseelam2/checkbox.io.git
+      become: true
+
+    - name: Copy nginx config to /etc folder
+      copy:
+        src: /var/lib/jenkins/workspace/{{ checkboxio_job_name }}/checkbox.io/local-conf/nginx.conf 
+        dest: /etc/nginx/nginx.conf
+        owner: vagrant
+        group: vagrant
+        mode: 644
+      become: true
+
+    - name: Copy local config to /etc folder
+      copy:
+        src: /var/lib/jenkins/workspace/{{ checkboxio_job_name }}/checkbox.io/local-conf/default
+        dest: /etc/nginx/sites-available/default 
+        mode: 644
+        owner: vagrant
+        group: vagrant
+      become: true
+
+    - name: npm install
+      npm:
+        path: /var/lib/jenkins/workspace/{{ checkboxio_job_name }}/checkbox.io/server-side/site
+      become: true
+
+    - name: npm test run
+      shell: |
+        cd /var/lib/jenkins/workspace/{{ checkboxio_job_name }}/checkbox.io/server-side/site
+        #npm test
+      become: true

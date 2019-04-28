@@ -1,0 +1,5 @@
+---
+  - name: Write Inventory File from Checkbox Inventory
+    shell: |
+      sudo python /home/vagrant/deploy/write_marqdown_inventory.py
+      sudo ansible-playbook /home/vagrant/deploy/deploy_marqdown_checkbox.yml -i /home/vagrant/deploy/checkbox_marqdown_inventory -e @/home/vagrant/deploy/roles/deploy_checkbox/vars/main.yml

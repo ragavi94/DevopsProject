@@ -15,17 +15,4 @@
   tags: mysql
   become: true
 
-- name: Installing client and libs
-  apt: pkg={{item}} state=installed
-  with_items:
-      - mysql-client
-      - python-mysqldb
-  tags: mysql
-  become: true
-
-- name: Restart mysql service
-  service: name=mysql state=restarted
-  become: true
-
-
 ...

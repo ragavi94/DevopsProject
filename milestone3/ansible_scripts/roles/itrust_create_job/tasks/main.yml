@@ -23,7 +23,6 @@
     mode: 0666
   become: true
 
-
 - name: Copy itrust job builder script
   template:
       src: ~/DevopsProject/milestone3/ansible_scripts/roles/itrust_create_job/templates/itrust_deploy_script.yml
@@ -31,8 +30,8 @@
 
 - name: Copy iTrust Production Server provision ansible playbook
   copy:
-    src: "~/DevopsProject/milestone3/ansible_scripts/roles/itrust_create_job/templates/provision.yml"
-    dest: /var/lib/jenkins/provision.yml
+    src: "~/DevopsProject/milestone3/ansible_scripts/roles/itrust_create_job/templates/itrust_provision.yml"
+    dest: /var/lib/jenkins/itrust_provision.yml
     owner: jenkins
     group: jenkins
     mode: 0666
@@ -40,7 +39,7 @@
 
 - name: Copy itrust Provision Scripts
   copy:
-      src: ~/DevopsProject/milestone3/ansible_scripts/roles/itrust_create_job/templates/provision
+      src: ~/DevopsProject/milestone3/ansible_scripts/roles/itrust_create_job/templates/itrust_provision
       dest: /home/vagrant/
   become: true
 

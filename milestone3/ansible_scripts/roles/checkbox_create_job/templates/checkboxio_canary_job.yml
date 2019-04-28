@@ -1,11 +1,11 @@
 - job:
-    name: "{{checkboxio_job_name}}"
+    name: "{{checkboxio_canary_job_name}}"
     scm: 
       - git: 
           
           url: http://{{gituser}}:{{gitpass}}@github.com/sseelam2/checkbox.git
           branches: 
-            - origin/master
+            - origin/canary
             - ${sha1}
     triggers:
       - pollscm:
@@ -23,10 +23,9 @@
                 - SUCCESS                
               build-steps:
                 - shell: |
-                    sudo ansible-playbook /var/lib/jenkins/checkbox_provision.yml -i /var/lib/jenkins/local_inventory
-                    sleep 60s
                     cd /home/vagrant
-                    sudo ansible-playbook /home/vagrant/deploy/deploy_checkbox.yml -i /home/vagrant/deploy/checkbox_inventory
+                    sudo python /home/vagrant/deploy/write_canary_inventory.py
+                    sudo ansible-playbook /home/vagrant/deploy/deploy_canary_checkbox.yml -i /home/vagrant/deploy/checkbox_canary_inventory
 
                     
 

@@ -16,8 +16,8 @@
             sudo ansible-playbook /var/lib/jenkins/itrust_build_deploy.yml -i ~/local_inventory
             sleep 20s 
             cd /var/lib/jenkins/workspace/{{itrust_deploy_name}}/iTrust2-v4/iTrust2/ 
-            sudo mvn -f pom-data.xml process-test-classes
-            cd /var/lib/jenkins/workspace/{{itrust_deploy_name}}/iTrust2-v4/iTrust2/ && sudo mvn clean test verify checkstyle:checkstyle
+            #sudo mvn -f pom-data.xml process-test-classes
+            #cd /var/lib/jenkins/workspace/{{itrust_deploy_name}}/iTrust2-v4/iTrust2/ && sudo mvn clean test verify checkstyle:checkstyle
  
     publishers:          
       - postbuildscript:
@@ -27,7 +27,7 @@
                 - SUCCESS                
               build-steps:
                 - shell: |
-                    sudo ansible-playbook /var/lib/jenkins/provision.yml -i ~/local_inventory
+                    sudo ansible-playbook /var/lib/jenkins/itrust_provision.yml -i ~/local_inventory
                     sleep 60s
                     cd /home/vagrant
                     sudo ansible-playbook /home/vagrant/deploy/iTrust_deploy.yml -i /home/vagrant/deploy/itrust_inventory

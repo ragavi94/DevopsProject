@@ -1,5 +1,0 @@
-- name: deploying checkboxio
-  hosts: checkbox
-  become: true
-  roles:
-    - deploy_checkbox

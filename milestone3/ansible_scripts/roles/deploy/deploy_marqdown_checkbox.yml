@@ -1,0 +1,15 @@
+- name: deploying checkboxio Marqdown Rendering - Infrastructure Upgrade
+  hosts: checkbox
+  become: true
+  tasks:
+    - name: Start server marqdown instead of normal server.js
+      shell: cd /home/checkbox.io/server-side/site/ && forever stopall && forever start server_marqdown.js
+      environment:
+        APP_PORT: 3002
+        MONGO_IP: 127.0.0.1
+        MONGO_USER: '{{dbuser}}'
+        MONGO_PASSWORD: '{{dbpwd}}'
+        MAIL_USER: '{{mailuser}}'
+        MAIL_PASSWORD: '{{mailpwd}}'
+        MAIL_SMTP: 'smtp.gmail.com'
+        SERVICE_URL: ''

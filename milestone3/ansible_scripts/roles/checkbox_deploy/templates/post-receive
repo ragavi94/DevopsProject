@@ -7,6 +7,13 @@ echo "\n -------------- POST RECEIVE GIT HOOK -------------"
 if [ $BRANCHNAME = 'master' ]; then
     echo "CURRENT CHECKED OUT BRANCH IS: master"
     echo "git-url",$GITHUB_URL
-    node {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/checkbox_deploy/templates/trigger.js
+    #node {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/checkbox_deploy/templates/trigger.js
+    sudo ansible-playbook {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/checkbox_build.yml -i {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/inventory --vault-password-file {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/vault_pass.txt
+fi
+if [ $BRANCHNAME = 'canary' ]; then
+    echo "CURRENT CHECKED OUT BRANCH IS: canary"
+    echo "git-url",$GITHUB_URL
+    #node {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/roles/checkbox_deploy/templates/trigger.js
+    sudo ansible-playbook {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/checkbox_canary_build.yml -i {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/inventory --vault-password-file {{ devops_milestone_dir }}/DevopsProject/milestone3/ansible_scripts/vault_pass.txt
 fi
 
