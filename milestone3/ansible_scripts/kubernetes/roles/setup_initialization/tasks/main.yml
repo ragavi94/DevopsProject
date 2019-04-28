@@ -1,0 +1,61 @@
+- name: Installing python
+  raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+  become: yes
+
+- name: apt-get update
+  apt:
+   update_cache: yes
+  become: yes
+
+- name: Create kubernetes directory
+  file:
+    path: /root/kubernetes
+    state: directory
+
+- name: Install required packages for kubernetes
+  apt:
+    pkg: '{{item}}'
+    state: present
+    update_cache: yes
+  become: yes
+  with_items:
+    - apt-transport-https
+    - docker.io
+    - git
+    - python-pip
+
+
+- name: Start docker
+  systemd: state=started name=docker
+  become: yes
+
+- name: Enable docker
+  systemd: enabled=yes name=docker
+  become: yes
+
+- name: get key for Kubernetes
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+  become: yes
+
+- name: Create sources.list.d file for Kubernetes
+  copy:
+    content: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+    dest: /etc/apt/sources.list.d/kubernetes.list
+    force: yes
+  become: yes
+
+
+
+- name: Install Kubernetes applications
+  apt:
+    pkg: '{{item}}'
+    state: present
+    update_cache: yes
+  become: yes
+  with_items:
+    - kubelet
+    - kubeadm
+    - kubectl
+    - kubernetes-cni

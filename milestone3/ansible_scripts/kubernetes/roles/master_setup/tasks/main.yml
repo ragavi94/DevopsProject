@@ -1,0 +1,41 @@
+- name: kubeadm init and sending the output to a file
+  shell: kubeadm init --apiserver-advertise-address $(hostname -i) > /root/kubernetes/output.txt --ignore-preflight-errors="NumCPU"
+  become: yes
+
+- name: Install docker-py
+  pip:
+    name: docker-py
+    state: present
+  become: yes
+
+- name: Copy the join command to a shell script 
+  shell: cat /root/kubernetes/output.txt | grep "kubeadm join" > /root/kubernetes/joinTokens.sh
+
+- name: set skip ca verification
+  lineinfile:
+    path: /root/kubernetes/joinTokens.sh
+    insertafter: 'kubeadm join '
+    line: ' --discovery-token-unsafe-skip-ca-verification '
+
+- name: Copy the marqdown folder to the master
+  copy:
+    src: ~/DevopsProject/milestone3/ansible_scripts/kubernetes/checkboxio_Marqdown
+    dest: /root/kubernetes/
+  become: yes
+
+- name: Fetch joinTokens.sh from Master to local
+  fetch:
+    src: "/root/kubernetes/joinTokens.sh"
+    dest: "~/DevopsProject/milestone3/ansible_scripts/kubernetes/roles/master_setup/templates/joinTokens.sh"
+    flat: yes
+
+- name: create .kube folder
+  shell: mkdir -p /root/.kube
+
+- name: copy the config file to /home/ubuntu/.kube/config
+  shell: cp -i /etc/kubernetes/admin.conf /root/.kube/config
+  become: yes
+
+- name: change the user
+  shell: chown root:root /root/.kube/config
+  become: yes

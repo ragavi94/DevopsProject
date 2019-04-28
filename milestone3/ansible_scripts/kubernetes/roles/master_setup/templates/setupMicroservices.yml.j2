@@ -1,0 +1,63 @@
+---
+- hosts: localhost
+  vars:
+    checkbox_path: "/home/checkbox.io"
+  tasks:
+    - name: apt-get update
+      apt:
+        update_cache: yes
+      become: yes
+
+
+    - name: Install required packages
+      apt:
+        pkg: npm
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: Install required packages
+      apt:
+        pkg: nodejs
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: Install required packages
+      apt:
+        pkg: nodejs-legacy
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: Install required packages
+      apt:
+        pkg: nginx
+        state: present
+        update_cache: yes
+      become: yes
+
+    
+    - name: Ensuring previous clone isn't present
+      file:
+        state: absent
+        path: '/home/checkboxio_Marqdown'
+
+    - name: Cloning Github repo
+      git:
+        repo: 'https://github.com/sseelam2/checkboxio_Marqdown.git'
+        dest: /home/checkboxio_Marqdown
+        update: no
+
+    - name: Install Forever node package
+      npm:
+        name: forever
+        state: present
+        global: yes
+      become: yes
+
+    - name: Install required node packages
+      npm:
+        path: "/home/checkboxio_Marqdown/"
+
+   

@@ -1,0 +1,51 @@
+- name: Initialize cluster Networking
+  shell: kubectl apply -n kube-system -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 |tr -d '\n')"
+
+- name: Log into DockerHub
+  docker_login:
+    username: "{{docker_username}}"
+    password: "{{docker_password}}"
+    email: "{{docker_email}}"
+  
+
+- name: Build a docker image using Dockerfile
+  shell: "docker build -t srijanih/devops:box ."
+  args:
+    chdir: "/root/kubernetes/checkboxio_Marqdown"
+    
+- name: Pull the checkbox image
+  docker_image:
+    name: srijanih/devops:box
+    pull: yes
+
+- name: Push the checkbox image
+  docker_image:
+    name: srijanih/devops:box
+    push: yes
+    force: yes
+
+
+
+- name: Wait time for the replicas to be created and assigned
+  pause:
+    minutes: 1
+
+- name: Creating a deployement with 3 replicas using the checkbox image
+  shell: "kubectl run checkbox --image=srijanih/devops:box --replicas=3 --port=5001"
+
+- name: Wait time for the replicas to be created and assigned
+  pause:
+    minutes: 1
+
+- name: Exposing the checkbox deployment using NodePor11
+  shell: kubectl expose deployment checkbox --type=LoadBalancer --name=checkbox
+
+- name: Wait time for to assign NodePort
+  pause:
+    minutes: 1
+
+- name: Printing the NodePort to access the application
+  shell: kubectl describe services checkbox
+  register: output
+- debug:
+    var: output.stdout_lines

@@ -1,0 +1,7 @@
+---
+
+- include: install_updates.yml
+- include: SetupInitialization.yml 
+- include: setupMaster.yml
+- include: setupWorkers.yml
+- include: setupCheckbox.yml

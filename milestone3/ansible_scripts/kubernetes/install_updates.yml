@@ -1,0 +1,6 @@
+---
+- hosts: master, workers
+  gather_facts: no
+
+  roles:
+    - install_updates

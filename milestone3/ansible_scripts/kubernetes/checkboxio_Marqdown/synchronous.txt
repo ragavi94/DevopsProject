@@ -1,0 +1,166 @@
+<p><div data-page="0"></p>
+<p>^ Start with header.</p>
+<p><div data-question="1" data-kind="multichoice"></p>
+<h3 id="1-multiple-choice-question-check-all-that-apply-">1. Multiple Choice Question (Check all that apply)</h3>
+<p>
+<ul>
+  <li>
+    <div class="controls">
+      <label class="checkbox">Choice A
+        <input type="checkbox" name="1" value="0"/></label>
+    </div>
+  </li>
+  <li>
+    <div class="controls">
+      <label class="checkbox">Choice B
+        <input type="checkbox" name="1" value="1"/></label>
+    </div>
+  </li>
+  <li>
+    <div class="controls">
+      <label class="checkbox">Choice C
+        <input type="checkbox" name="1" value="2"/></label>
+    </div>
+  </li>
+</ul>
+</div>
+<div data-question="2" data-kind="singlechoice"></p>
+<h3 id="2-single-choice-question">2. Single Choice Question</h3>
+<p>A <em>description</em> for question.</p>
+<p>
+<ol>
+  <li>
+    <div class="controls">
+      <label class="radio">Choice
+        <input type="radio" name="2" value="0"/></label>
+    </div>
+  </li>
+  <li>
+    <div class="controls">
+      <label class="radio">Choice
+        <input type="radio" name="2" value="1"/></label>
+    </div>
+  </li>
+  <li>
+    <div class="controls">
+      <label class="radio">Choice
+        <input type="radio" name="2" value="2"/></label>
+    </div>
+  </li>
+</ol>
+</div>
+<div data-question="3" data-kind="singlechoicetable"></p>
+<h3 id="3-ranking-rating-table">3. Ranking/Rating Table</h3>
+<p>Columns n+1 can be empty.  <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#wiki-tables">Use github flavored markdown for table formatting</a></p>
+<p>
+<table class="questionTable table-bordered table-condensed">
+  <thead>
+    <tr>
+      <th>Column</th>
+      <th>Rating</th>
+      <th>Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Choice</td>
+      <td>
+        <div class="surveycell">
+          <label class="radio">
+            <input type="radio" value="1" name="3_0"/>
+          </label>
+        </div>
+      </td>
+      <td>
+        <div class="surveycell">
+          <label class="radio">
+            <input type="radio" value="2" name="3_0"/>
+          </label>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Choice</td>
+      <td>
+        <div class="surveycell">
+          <label class="radio">
+            <input type="radio" value="1" name="3_1"/>
+          </label>
+        </div>
+      </td>
+      <td>
+        <div class="surveycell">
+          <label class="radio">
+            <input type="radio" value="2" name="3_1"/>
+          </label>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Choice</td>
+      <td>
+        <div class="surveycell">
+          <label class="radio">
+            <input type="radio" value="1" name="3_2"/>
+          </label>
+        </div>
+      </td>
+      <td>
+        <div class="surveycell">
+          <label class="radio">
+            <input type="radio" value="2" name="3_2"/>
+          </label>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Choice</td>
+      <td>
+        <div class="surveycell">
+          <label class="radio">
+            <input type="radio" value="1" name="3_3"/>
+          </label>
+        </div>
+      </td>
+      <td>
+        <div class="surveycell">
+          <label class="radio">
+            <input type="radio" value="2" name="3_3"/>
+          </label>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Choice</td>
+      <td>
+        <div class="surveycell">
+          <label class="radio">
+            <input type="radio" value="1" name="3_4"/>
+          </label>
+        </div>
+      </td>
+      <td>
+        <div class="surveycell">
+          <label class="radio">
+            <input type="radio" value="2" name="3_4"/>
+          </label>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<div data-page="1">
+<div data-question="4" data-kind="textarea"></p>
+<h3 id="4-text-multiple-line-answer">4. Text multiple line answer</h3>
+<p>Please go into <strong>great</strong> detail.</p>
+<p>
+<textarea name="undefined" rows="5" class="span9"></textarea>
+</div>
+<div data-question="5" data-kind="text"></p>
+<h3 id="5-text-single-line-answer">5. Text single line answer</h3>
+<p>You can enter in <code>{rows:1}</code> or leave blank.</p>
+<p>
+<input type="text" name="5" placeholder=""/>
+</div></p>

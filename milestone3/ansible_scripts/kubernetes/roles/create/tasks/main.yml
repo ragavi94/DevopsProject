@@ -1,0 +1,62 @@
+  - name: install dependencies
+    shell: 'npm install'
+    args:
+      chdir: "./roles/create/templates/provision"
+
+  - name: read environment variable
+    shell: |
+      cat ~/DevopsProject/milestone3/ansible_scripts/access
+    register: env_var
+            
+  - name: Run script to create master and workers nodes in Digital Ocean
+    command: node ./roles/create/templates/provision/main.js {{ ssh_dir }}
+    environment:
+      DOTOKEN: "{{ env_var.stdout }}"
+    register: output_var
+
+  - name: Display IP address 
+    debug: var=output_var
+
+  - name: editing inventory to add ips of remote servers
+    lineinfile:
+      dest: ~/DevopsProject/milestone3/ansible_scripts/kubernetes/inventory
+      insertafter: '^\[master\]'
+      line: "{{ item }} ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa"
+    with_items: 
+      - "{{ output_var.stdout_lines[0] }}"
+
+  - name: editing inventory to add ips of remote servers
+    lineinfile:
+      dest: ~/DevopsProject/milestone3/ansible_scripts/kubernetes/inventory
+      insertafter: '^\[workers\]'
+      line: "{{ item }} ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa"
+    with_items: 
+      - "{{ output_var.stdout_lines[1] }}"
+      - "{{ output_var.stdout_lines[2] }}"
+      - "{{ output_var.stdout_lines[3] }}"
+
+  - name: Assign Remote Server IP address to Inventory file
+    lineinfile:
+      dest: ~/DevopsProject/milestone3/ansible_scripts/kubernetes/roles/checkbox_setup/vars/main.yml
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+    with_items:
+      - { regexp: '.*(  master: )', line: '  master: {{ output_var.stdout_lines[0] }}' }
+
+  - name: Assign Remote Server IP address to Inventory file
+    lineinfile:
+      dest: ~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+    with_items:
+      - { regexp: '.*(  master: )', line: '  master: {{ output_var.stdout_lines[0] }}' }
+  
+  - name: wait
+    shell: |
+      sleep 30s
+
+
+
+  
+  
+  

@@ -1,0 +1,11 @@
+- name: kubernetes - create master and workers
+  hosts: localhost
+  vars_prompt:
+    - name: "ssh_dir"
+      prompt: "Enter full directory of your ssh ID eg: /home/ragavi/.ssh/"
+      private: no
+  
+  roles:
+    - create
+    
+

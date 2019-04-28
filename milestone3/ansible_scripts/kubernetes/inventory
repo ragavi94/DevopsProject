@@ -1,0 +1,8 @@
+[master]
+134.209.161.44 ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+[workers]
+134.209.169.130 ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa
+138.197.13.250 ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa
+134.209.161.100 ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa
+

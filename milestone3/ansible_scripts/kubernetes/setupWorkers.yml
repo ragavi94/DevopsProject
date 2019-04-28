@@ -1,0 +1,7 @@
+---
+- hosts: workers
+  gather_facts: no
+
+  roles:
+    - workers_setup
+
