@@ -1,4 +1,14 @@
 ---
+
+  - name: Assign Kubernetes External IP as environment varaible in Checkbox Marqdown server
+    lineinfile:
+      dest: /home/vagrant/deploy/deploy_marqdown_checkbox.yml
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+    with_items:
+      - { regexp: '.*(        SERVICE_URL: '')', line: "        SERVICE_URL: 'http://{{ ip_port }}/mtoh'" }
+    become: true
+
   - name: Write Inventory File from Checkbox Inventory
     shell: |
       sudo python /home/vagrant/deploy/write_marqdown_inventory.py

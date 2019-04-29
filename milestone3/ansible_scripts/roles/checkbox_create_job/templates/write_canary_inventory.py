@@ -1,7 +1,7 @@
 import os
 lines = file('/home/vagrant/deploy/checkbox_inventory', 'r').readlines()
 #print lines 
-del lines[-1]
+del lines[-2]
 #print lines
 f=open('/home/vagrant/deploy/checkbox_canary_inventory','w+')
 

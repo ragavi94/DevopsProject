@@ -63,3 +63,10 @@
         line: "{{ item }} ansible_ssh_user=root ansible_ssh_private_key_file=/home/vagrant/.ssh/io_rsa"
       loop: "{{ output_iplist.msg }}"
 
+    - name: make a Copy checkbox job build playbook's inventory
+      template:
+          src: "/home/vagrant/deploy/checkbox_inventory"
+          dest:  /home/vagrant/checkbox_inventory
+          remote_src: yes
+      become: true
+

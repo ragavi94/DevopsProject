@@ -24,6 +24,7 @@
               build-steps:
                 - shell: |
                     cd /home/vagrant
+                    sudo cp /home/vagrant/checkbox_inventory /home/vagrant/deploy/checkbox_inventory
                     sudo python /home/vagrant/deploy/write_canary_inventory.py
                     sudo ansible-playbook /home/vagrant/deploy/deploy_canary_checkbox.yml -i /home/vagrant/deploy/checkbox_canary_inventory
 

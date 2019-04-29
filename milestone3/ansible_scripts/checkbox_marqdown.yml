@@ -1,6 +1,9 @@
 - name: checkboxMarqdown Rendering - Infrastructure Upgrade
   hosts: jenkins
- 
+  vars_prompt:
+    - name: "ip_port"
+      prompt: "Enter IP,port of master node as given in the kunernetes setup output eg) 192.168.1.1:5001"
+      private: no
   
   roles:
     - checkboxMarqdown
