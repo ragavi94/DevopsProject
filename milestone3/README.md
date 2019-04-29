@@ -104,6 +104,38 @@ SPECIAL COMPONENT - CANARY RELEASE FOR CHECKBOX.IO:
 
 Canary releases are used when a new feature of a software are tested on production by introducing it only to a specific set of audience. We implemented canary release as a special milestone on our checkboxio application. A custom proxy server script is used to load balance the user traffic and redirect it to the Production and the canry server on a 75:25 ratio. The script also monitors rhe canary server for failure / manual shut down and redirects 100% traffic to the original production server on these cases.
 
+![canary](https://media.github.ncsu.edu/user/8418/files/40bf3200-6a0a-11e9-996f-6a4f72bb8b30)
+
+
+1. Run the CheckBox deploy script following the instructions above, to deploy Checkbox.io on Two Servers. One of which will be Canary Server. 
+
+2. Git Clone the CheckBox Repo from here. https://github.com/sseelam2/checkbox.git
+
+3. Run "git checkout canary"
+
+4. Make some changes on the checkbox/public_html/index.html file. 
+
+5. Do a git add , git commit and git push to canary by "git push origin canary".
+
+The Git push triggers a Post receive Git hook that checks if the branch is canary, runs a script to select one among the
+two Production Servers as a Canary Server and Deploys the new branch code changes on it and Restarts the server. 
+
+6. Visit both the servers to see a difference on their features (the new addition). 
+
+7. The proxy server that redirects between the two Production servers is present in the path on the Jenkins Server. 
+
+"~/DevopsProject/milestone3/ansible_scripts/roles/deploy/roles/deploy_checkbox_canary/tasks".
+
+SSH inside the Jenkins server, cd to the mentioned path and Run the file using "sudo python3 proxy.py"
+The proxy server starts on port 1012. Visit "192.168.33.72:1012" several times to see the switch between the canary and the
+production servers. 
+
+Canary Check: Destroy the Canary checkbox VM on Digital Ocean. You should now see all redirections happening to the original
+Production Server.
+
+Thus with our implementation in the final milestone, we are not only able to handle constant flow of changes to the application code, test it and deploy but also enhance the user and developer experience by introducing components like feature flags, high availability microservices and deployment strategies like canary releases.
+
+
 
 
 
