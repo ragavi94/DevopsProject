@@ -79,6 +79,9 @@ sudo ansible-playbook itrustDeploy.yml -i inventory --ask-vault-pass -e @~/Devop
 
 Feature Flags for ITrust:
 
+![feature flags](https://media.github.ncsu.edu/user/8898/files/b7f5c580-6a0c-11e9-8642-035720748aa5)
+
+
 We have implemented feature flags using a configuration server in which we have installed a redis server and a redis cli. Redis is an open source in memory data structure store used as a database. We are using redis to store a key value pair. Feature flag being the key and true or false being the value. We can toggle between these feature flags and change the output as desired.
 
 To check this feature out, 
