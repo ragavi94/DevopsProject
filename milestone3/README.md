@@ -98,7 +98,27 @@ Hence, we see that Feature Flags and Redis DB is useful in a Production Environm
 INFRASTRUCTURE UPGRADE - CHECKBOX.IO:
 
 Microservices isolate functionalities of a software  into modules that helps you keep the software distributed, enables ease of testing and high availability. We use a kubernetes cluster with master and 3 worker nodes to host the microservice that converts a markdown into html.
-we also modified the existing checkboxio server code to make http post calls to the kubernetes cluster's Ip and  render the markdown rather than making a local function call. The 3 worker nodes introduces hihh availability. Server failure on one of the worker nodes does not affect the functionality or service.
+we also modified the existing checkboxio server code to make http post calls to the kubernetes cluster's Ip and  render the markdown rather than making a local function call. The 3 worker nodes introduces high availability. Server failure on one of the worker nodes does not affect the functionality or service.
+
+We have setup a kubernetes cluster for this purpose. Initially we have created 4 droplets in digital ocean, in which one of them is master and the other  3 act as worker nodes.
+
+To create the droplets on digital ocean:
+cd DevopsProject/milestone3/ansible_scripts/kubernetes
+sudo ansible-playbook create.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
+
+
+To install the updates and initialize setup on master and worker nodes and to deploy the built image on worker nodes:
+cd DevopsProject/milestone3/ansible_scripts/kubernetes
+sudo ansible-playbook main.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
+
+
+ The required updates and kubernetes application package has been installed on the master and the slave nodes. A kubernetes cluster has been formed with the master and the 3 nodes by copying the tokens generated from the master to the worker nodes. We have a Dockerfile which runs a node script to convert the marqdown to html and this built image from the Dockerfile is pushed to the dockerhub. We create a deployment on the worker nodes using the built image on the 3 worker nodes. A HTTP request with marqdown has been sent from the checkbox deployment server to the master node. The master node acts as a load balancer and sends this to one of the 3 worker nodes, from where we obtain the http respone with the html content, that would be displayed on the page. 
+
+
+Execute a script which would send the marqdown to html conversion as a http request to the load balancing IP instead of calling the marqdown.render locally.  This script returns a prompt to which we have to provide the master IP and nodeport, which is set as an environment variable in the checkbox production server.
+
+cd DevopsProject/milestone3/ansible_scripts/
+sudo ansible-playbook checkbox_marqdown.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
 
 SPECIAL COMPONENT - CANARY RELEASE FOR CHECKBOX.IO:
 
