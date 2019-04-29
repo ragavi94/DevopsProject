@@ -1,5 +1,5 @@
 
-Basic Repository Setup and Steps to Run:
+# Basic Repository Setup and Steps to Run:
 
 1. do a git clone of the repo in your home directory,
 
@@ -33,9 +33,9 @@ server. To access the Provisioned Digital Ocean servers via SSH, Login to the Je
 11. All ansible scrips to be run at "~/DevopsProject/milestone2/ansible_scripts" unless mentioned specifically where to be run.
 
 
-Milestone3: DEPLOYMENT, FEATURE FLAGS , INFRASTRUCTURE UPGRADE AND CANARY RELEASE
+## Milestone3: DEPLOYMENT, FEATURE FLAGS , INFRASTRUCTURE UPGRADE AND CANARY RELEASE
 
-DEPLOYMENT: 
+### DEPLOYMENT: 
 
 We deploy Itrust and Checkbox.io into remote production servers in this component. A post receive Git hook that gets called whenever a change is pushed from the development environment, builds and tests the changes on the jenkins server. A successful build triggers a post build task that provisions and sets up itrust and checkboxio on the remote server created on Digital Ocean.
 
@@ -46,7 +46,7 @@ We deploy Itrust and Checkbox.io into remote production servers in this componen
 To run the deployment script that creates a change in the Checkbox.io and ITrust Repository, do a git push, trigger a post receive Git Hook , run Jenkins Build and tests , Provison and Deploy the Application, run the following script. 
 
 
-CheckBox.io: 
+### CheckBox.io: 
 
 1. Setup Jenkins Server:
 
@@ -63,7 +63,7 @@ sudo ansible-playbook checkbox.yml -i inventory --ask-vault-pass -e @~/DevopsPro
 sudo ansible-playbook checkboxDeploy.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
 
 
-ITrust:
+### ITrust:
 
 1. Setup Jenkins Server:
 
@@ -81,7 +81,7 @@ sudo ansible-playbook itrust.yml -i inventory --ask-vault-pass -e @~/DevopsProje
 sudo ansible-playbook itrustDeploy.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
 
 
-Feature Flags for ITrust:
+### Feature Flags for ITrust:
 
 ![feature flags](https://media.github.ncsu.edu/user/8898/files/b7f5c580-6a0c-11e9-8642-035720748aa5)
 
@@ -102,7 +102,7 @@ you should see a server 500 error because the Redis configuration is set to NIL.
 
 Hence, we see that Feature Flags and Redis DB is useful in a Production Environment to control visibility of certain Pages/features of the application being deployment. 
 
-INFRASTRUCTURE UPGRADE - CHECKBOX.IO:
+### INFRASTRUCTURE UPGRADE - CHECKBOX.IO:
 
 
 ![upgrade](https://media.github.ncsu.edu/user/8898/files/e4114680-6a0c-11e9-8d14-a62ece3c8146)
@@ -139,7 +139,7 @@ sudo ansible-playbook checkbox_marqdown.yml -i inventory --ask-vault-pass -e @~/
 2. Destroy a worker VM on Digital Ocean and refresh the page. The Marqdown is still rendered demonstrating high availabiltyof the Microservice.
 
 
-SPECIAL COMPONENT - CANARY RELEASE FOR CHECKBOX.IO:
+### SPECIAL COMPONENT - CANARY RELEASE FOR CHECKBOX.IO:
 
 Canary releases are used when a new feature of a software are tested on production by introducing it only to a specific set of audience. We implemented canary release as a special milestone on our checkboxio application. A custom proxy server script is used to load balance the user traffic and redirect it to the Production and the canry server on a 75:25 ratio. The script also monitors rhe canary server for failure / manual shut down and redirects 100% traffic to the original production server on these cases.
 
@@ -174,7 +174,7 @@ Production Server.
 
 Thus with our implementation in the final milestone, we are not only able to handle constant flow of changes to the application code, test it and deploy but also enhance the user and developer experience by introducing components like feature flags, high availability microservices and deployment strategies like canary releases.
 
-Screencast :
+## Screencast :
 
 1. Deployment of Checkbox.io and Itrust Applications:
 
