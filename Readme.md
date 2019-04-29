@@ -17,4 +17,4 @@ Here is a quick video describing our entire CI/CD Pipeline and how we use it on 
 
 
 
-[![DEVOPS_VIIDEO](https://img.youtube.com/vi/4s2an-SKZws/0.jpg)](https://www.youtube.com/watch?v=4s2an-SKZws)
+[![DEVOPS_VIIDEO](https://img.youtube.com/vi/mAsrqAvUU-w/0.jpg)](https://www.youtube.com/watch?v=mAsrqAvUU-w)
