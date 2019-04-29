@@ -3,7 +3,7 @@ Basic Repository Setup and Steps to Run:
 
 1. do a git clone of the repo in your home directory
 
-https://github.ncsu.edu/sseelam2/DevopsProject.git
+  https://github.ncsu.edu/sseelam2/DevopsProject.git
 
 2. cd into milestone3/servers/jenkins
 
@@ -13,8 +13,8 @@ https://github.ncsu.edu/sseelam2/DevopsProject.git
 
 5. Go to ~/DevopsProject/milestone2/ansible_scripts/vars/main.yml and change the following paths to your home directory.
 
-  itrust_dir : /home/harish/Project
-  devops_milestone_dir : /home/harish
+    itrust_dir : /home/harish/Project
+    devops_milestone_dir : /home/harish
   
 6. The default size of the Jenkins Server VM in the baker.yml file is 4GB. To change it, go to
    ~/DevopsProject/milestone2/servers/jenkins/baker.yml
@@ -30,6 +30,9 @@ provisioning Remote Servers on Digital Ocean.
 server. To access the Provisioned Digital Ocean servers via SSH, Login to the Jenkins server and use respective SSH keys.
 (io_rsa for Checkboxio and do_rsa for ITrust).
 
+11. All ansible scrips to be run at "~/DevopsProject/milestone2/ansible_scripts" unless mentioned specifically where to be run.
+
+
 Milestone3: DEPLOYMENT, FEATURE FLAGS , INFRASTRUCTURE UPGRADE AND CANARY RELEASE
 
 DEPLOYMENT: 
@@ -42,7 +45,8 @@ We deploy Itrust and Checkbox.io into remote production servers in this componen
 
 To run the deployment script that creates a change in the Checkbox.io and ITrust Repository, do a git push, trigger a post receive Git Hook , run Jenkins Build and tests , Provison and Deploy the Application, run the following script. 
 
-CheckBox.io:
+
+CheckBox.io: 
 
 1. Setup Jenkins Server:
 
@@ -157,7 +161,7 @@ two Production Servers as a Canary Server and Deploys the new branch code change
 
 6. Visit both the servers to see a difference on their features (the new addition). 
 
-7. The proxy server that redirects between the two Production servers is present in the path on the Jenkins Server. 
+7. The proxy server that redirects between the two Production servers is present in the following path on the Jenkins Server. 
 
 "~/DevopsProject/milestone3/ansible_scripts/roles/deploy/roles/deploy_checkbox_canary/tasks".
 
@@ -169,6 +173,26 @@ Canary Check: Destroy the Canary checkbox VM on Digital Ocean. You should now se
 Production Server.
 
 Thus with our implementation in the final milestone, we are not only able to handle constant flow of changes to the application code, test it and deploy but also enhance the user and developer experience by introducing components like feature flags, high availability microservices and deployment strategies like canary releases.
+
+Screencast :
+
+1. Deployment of Checkbox.io and Itrust Applications:
+
+https://drive.google.com/open?id=1zBrLMEuAu3ysbQbOWbJdjdXWKTqJvV-U
+
+2. Feature Flags for ITrust:
+
+https://drive.google.com/open?id=1CU2cjfIrI2q7wDAcztjL_I37H42azLVV
+
+3. Infrastructure Upgrade for Checkbox.io
+
+https://drive.google.com/file/d/1yXLzaSQBZg9b_pTGJzTkcC7MN4im-6_j/view?usp=sharing
+
+4. Canary Release on Checkbox.io
+
+https://drive.google.com/open?id=19GdDPZdM71Om__f46jq2MwTvmNkmuErM
+
+
 
 
 
