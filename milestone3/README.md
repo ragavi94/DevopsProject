@@ -100,6 +100,9 @@ Hence, we see that Feature Flags and Redis DB is useful in a Production Environm
 
 INFRASTRUCTURE UPGRADE - CHECKBOX.IO:
 
+
+![upgrade](https://media.github.ncsu.edu/user/8898/files/e4114680-6a0c-11e9-8d14-a62ece3c8146)
+
 Microservices isolate functionalities of a software  into modules that helps you keep the software distributed, enables ease of testing and high availability. We use a kubernetes cluster with master and 3 worker nodes to host the microservice that converts a markdown into html.
 
 We also modified the existing checkboxio server code to make http post calls to the kubernetes cluster's Ip and  render the markdown rather than making a local function call. The 3 worker nodes introduces high availability. Server failure on one of the worker nodes does not affect the functionality or service.
