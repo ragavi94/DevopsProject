@@ -98,17 +98,20 @@ Hence, we see that Feature Flags and Redis DB is useful in a Production Environm
 INFRASTRUCTURE UPGRADE - CHECKBOX.IO:
 
 Microservices isolate functionalities of a software  into modules that helps you keep the software distributed, enables ease of testing and high availability. We use a kubernetes cluster with master and 3 worker nodes to host the microservice that converts a markdown into html.
-we also modified the existing checkboxio server code to make http post calls to the kubernetes cluster's Ip and  render the markdown rather than making a local function call. The 3 worker nodes introduces high availability. Server failure on one of the worker nodes does not affect the functionality or service.
 
-We have setup a kubernetes cluster for this purpose. Initially we have created 4 droplets in digital ocean, in which one of them is master and the other  3 act as worker nodes.
+We also modified the existing checkboxio server code to make http post calls to the kubernetes cluster's Ip and  render the markdown rather than making a local function call. The 3 worker nodes introduces high availability. Server failure on one of the worker nodes does not affect the functionality or service.
 
+Initially we have created 4 droplets in digital ocean, in which one of them is master and the other  3 act as worker nodes.
 To create the droplets on digital ocean:
+
 cd DevopsProject/milestone3/ansible_scripts/kubernetes
 sudo ansible-playbook create.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
 
 
 To install the updates and initialize setup on master and worker nodes and to deploy the built image on worker nodes:
+
 cd DevopsProject/milestone3/ansible_scripts/kubernetes
+
 sudo ansible-playbook main.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
 
 
@@ -118,7 +121,13 @@ sudo ansible-playbook main.yml -i inventory --ask-vault-pass -e @~/DevopsProject
 Execute a script which would send the marqdown to html conversion as a http request to the load balancing IP instead of calling the marqdown.render locally.  This script returns a prompt to which we have to provide the master IP and nodeport, which is set as an environment variable in the checkbox production server.
 
 cd DevopsProject/milestone3/ansible_scripts/
+
 sudo ansible-playbook checkbox_marqdown.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
+
+1. You should now be able to see the MArqdown getting rendered on the "researchers.html" page of Checkbox.io 
+ 
+2. Destroy a worker VM on Digital Ocean and refresh the page. The Marqdown is still rendered demonstrating high availabiltyof the Microservice.
+
 
 SPECIAL COMPONENT - CANARY RELEASE FOR CHECKBOX.IO:
 
