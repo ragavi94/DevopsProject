@@ -1,9 +1,9 @@
 
 Basic Repository Setup and Steps to Run:
 
-1. do a git clone of the repo in your home directory
+1. do a git clone of the repo in your home directory,
 
-  https://github.ncsu.edu/sseelam2/DevopsProject.git
+      https://github.ncsu.edu/sseelam2/DevopsProject.git
 
 2. cd into milestone3/servers/jenkins
 
@@ -17,7 +17,7 @@ Basic Repository Setup and Steps to Run:
     devops_milestone_dir : /home/harish
   
 6. The default size of the Jenkins Server VM in the baker.yml file is 4GB. To change it, go to
-   ~/DevopsProject/milestone2/servers/jenkins/baker.yml
+          ~/DevopsProject/milestone2/servers/jenkins/baker.yml
    
 7. Add your digital ocean access key to the file in the path, /DevopsProject/milestone3/ansible_scripts/access . This enables
 provisioning Remote Servers on Digital Ocean.
