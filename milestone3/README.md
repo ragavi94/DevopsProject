@@ -124,6 +124,7 @@ cd DevopsProject/milestone3/ansible_scripts/kubernetes
 
 sudo ansible-playbook main.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
 
+This script has to be run 4 times after the first task to get access to all 4 droplets.
 
  The required updates and kubernetes application package has been installed on the master and the slave nodes. A kubernetes cluster has been formed with the master and the 3 nodes by copying the tokens generated from the master to the worker nodes. We have a Dockerfile which runs a node script to convert the marqdown to html and this built image from the Dockerfile is pushed to the dockerhub. We create a deployment on the worker nodes using the built image on the 3 worker nodes. A HTTP request with marqdown has been sent from the checkbox deployment server to the master node. The master node acts as a load balancer and sends this to one of the 3 worker nodes, from where we obtain the http respone with the html content, that would be displayed on the page. 
 
