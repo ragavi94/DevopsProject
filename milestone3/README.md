@@ -1,4 +1,35 @@
 
+Basic Repository Setup and Steps to Run:
+
+1. do a git clone of the repo in your home directory
+
+https://github.ncsu.edu/sseelam2/DevopsProject.git
+
+2. cd into milestone3/servers/jenkins
+
+3. Do baker bake to create the jenkins server with IP 192.168.33.72
+
+4. Add your id_rsa.pub ssh key into the jenkins server. 
+
+5. Go to ~/DevopsProject/milestone2/ansible_scripts/vars/main.yml and change the following paths to your home directory.
+
+  itrust_dir : /home/harish/Project
+  devops_milestone_dir : /home/harish
+  
+6. The default size of the Jenkins Server VM in the baker.yml file is 4GB. To change it, go to
+   ~/DevopsProject/milestone2/servers/jenkins/baker.yml
+   
+7. Add your digital ocean access key to the file in the path, /DevopsProject/milestone3/ansible_scripts/access . This enables
+provisioning Remote Servers on Digital Ocean.
+
+8. Some ansible playbooks on running prompts you for values, file paths etc.
+
+9. Ansible Vault has been used to encrypt secrets/passwords, whenever prompted, type "12345"
+
+10. The deployment gets triggered from the Jenkins server, so all the Digital Ocean servers contain SSH Keys of the Jenkins
+server. To access the Provisioned Digital Ocean servers via SSH, Login to the Jenkins server and use respective SSH keys.
+(io_rsa for Checkboxio and do_rsa for ITrust).
+
 Milestone3: DEPLOYMENT, FEATURE FLAGS , INFRASTRUCTURE UPGRADE AND CANARY RELEASE
 
 DEPLOYMENT: 
@@ -17,13 +48,16 @@ CheckBox.io:
 
 sudo ansible-playbook jenkins.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
 
+
 2. Create Jenkins Jobs, Copy scripts:
 
 sudo ansible-playbook checkbox.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
 
+
 3. Deploy Checkbox.io on a Remote Server:
 
 sudo ansible-playbook checkboxDeploy.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
+
 
 ITrust:
 
@@ -31,12 +65,48 @@ ITrust:
 
 sudo ansible-playbook jenkins.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
 
+
 2. Create Jenkins Jobs, Copy scripts and Change Jenkins Ports to 5001:
 
 sudo ansible-playbook itrust.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
 
+
 3. Deploy ITrust on a Remote Production Server:
 
+
 sudo ansible-playbook itrustDeploy.yml -i inventory --ask-vault-pass -e @~/DevopsProject/milestone3/ansible_scripts/vars/main.yml
+
+
+Feature Flags for ITrust:
+
+We have implemented feature flags using a configuration server in which we have installed a redis server and a redis cli. Redis is an open source in memory data structure store used as a database. We are using redis to store a key value pair. Feature flag being the key and true or false being the value. We can toggle between these feature flags and change the output as desired.
+
+To check this feature out, 
+
+1. SSH into the ITrust Production Server. On the vm, type 'redis-cli' to access the redis client that helps you configure the
+redis confgiuration server. 
+
+2. Login to ITrust Application as Admin and traverse to /admin/hospitals (Manage hospitals via the Main Menu). Initially, 
+you should see a server 500 error because the Redis configuration is set to NIL. 
+
+3. On the Redis Cli, type "set FeatureFlag True" and refresh the page. This should make the "Manage Hospitals" page visible now.
+
+4. On the Redis Cli, type "set FeatureFlag False" and refresh the page. This should make the "Feature Coming Soon!" page visible now.
+
+Hence, we see that Feature Flags and Redis DB is useful in a Production Environment to control visibility of certain Pages/features of the application being deployment. 
+
+INFRASTRUCTURE UPGRADE - CHECKBOX.IO:
+
+Microservices isolate functionalities of a software  into modules that helps you keep the software distributed, enables ease of testing and high availability. We use a kubernetes cluster with master and 3 worker nodes to host the microservice that converts a markdown into html.
+we also modified the existing checkboxio server code to make http post calls to the kubernetes cluster's Ip and  render the markdown rather than making a local function call. The 3 worker nodes introduces hihh availability. Server failure on one of the worker nodes does not affect the functionality or service.
+
+SPECIAL COMPONENT - CANARY RELEASE FOR CHECKBOX.IO:
+
+Canary releases are used when a new feature of a software are tested on production by introducing it only to a specific set of audience. We implemented canary release as a special milestone on our checkboxio application. A custom proxy server script is used to load balance the user traffic and redirect it to the Production and the canry server on a 75:25 ratio. The script also monitors rhe canary server for failure / manual shut down and redirects 100% traffic to the original production server on these cases.
+
+
+
+
+
 
 
